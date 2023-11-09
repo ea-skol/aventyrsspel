@@ -64,7 +64,7 @@ Railgun = StandardAbility("Railgun","A powerful railgun which accelerates a bull
 
 #characters
 Rangewave = Character("Rangewave","Proficient fighter.",2,1,1,2,1250,0,20,Railgun)
-Rangewave.ability = [Punch,Swift_strike,LROne_Blaster]
+Rangewave.ability = [Punch,Swift_strike,LROne_Blaster,Railgun]
 
 #enemy abilities
 Pounce = EnemyAbility("Pounce","A quick and easy pounce","melee",20,"team")
@@ -97,15 +97,6 @@ def listText(list,prepend,append):
         q = (f"{q}]")
     return q
 
-def inspect(team,tactical,enemies):
-    print("\nYour team consists of:")
-    for i in range(len(enemies)):
-        print(f'''  -{team[i].name} with {team[i].hp} health.''')
-    print(f"The tactcial ability is at {tactical}%.")
-    print("\nThe enemies are:")
-    for i in range(len(enemies)):
-        print(f'''  -{enemies[i].name} with {enemies[i].hp} health.\n''')
-
 def findTarget(side):
     q = listText(side,"cancel","")
     while True:
@@ -121,89 +112,185 @@ def findTarget(side):
             continue
         return answer-1
 
-def attack(character,ability,team,enemies):
-    character = team[character-1]
-    ability = ability-1
-    while True:
-        if type(character.ability[ability]) == StandardAbility:
-            if character.ability[ability].target == "enemy":
-                target = findTarget(enemies)
-            else:
-                target = findTarget(team)
-            if target == "cancel":
-                return "cancel"
-            if character.ability[ability].expType == "melee":
-                proficiency = character.melee
-            if character.ability[ability].expType == "ranged":
-                proficiency = character.range
-            if character.ability[ability].expType == "medicine":
-                proficiency = character.med
-            if character.ability[ability].expType == "tactic":
-                proficiency = character.tactic
-            if character.ability[ability].type == "kinetic":
-                damage = character.ability[ability].value * proficiency - enemies[target].armour
-            if character.ability[ability].type == "energy":
-                damage = character.ability[ability].value * proficiency - enemies[target].shield
-            if damage < 0:
-                damage = 0
-            print(f"The enemies health was {enemies[target].hp}")
-            enemies[target].hp -= damage
-            print(f"The enemies health is now {enemies[target].hp}")
-            return ""
+# def attack(character,ability,team,enemies):
+#     character = team[character-1]
+#     ability = ability-1
+#     while True:
+#         if type(character.ability[ability]) == StandardAbility:
+#             if character.ability[ability].target == "enemy":
+#                 target = findTarget(enemies)
+#             else:
+#                 target = findTarget(team)
+#             if target == "cancel":
+#                 return "cancel"
+#             if character.ability[ability].expType == "melee":
+#                 proficiency = character.melee
+#             if character.ability[ability].expType == "ranged":
+#                 proficiency = character.range
+#             if character.ability[ability].expType == "medicine":
+#                 proficiency = character.med
+#             if character.ability[ability].expType == "tactic":
+#                 proficiency = character.tactic
+#             if character.ability[ability].type == "kinetic":
+#                 damage = character.ability[ability].value * proficiency - enemies[target].armour
+#             if character.ability[ability].type == "energy":
+#                 damage = character.ability[ability].value * proficiency - enemies[target].shield
+#             if damage < 0:
+#                 damage = 0
+#             print(f"The enemies health was {enemies[target].hp}")
+#             enemies[target].hp -= damage
+#             print(f"The enemies health is now {enemies[target].hp}")
+#             return ""
 
-def choose(character,team,tactical,enemies):
-    q = listText(team[character-1].ability,"cancel",f"{team[character-1].super.name} ({tactical}%)")
-    while True:
-        answer = input(f"Which ability would you like to use? {q}")
-        if answer == "cancel":
-            return ""
-        if answer == "1":
-            value = attack(character,1,team,enemies)
-            break
-        elif answer == "2":
-            value = attack(character,2,team,enemies)
-            break
-        elif answer == "3":
-            value = attack(character,3,team,enemies)
-            break
-        elif answer == "4" and tactical != 100:
-            input("The ability must charge to 100% before it can be used. ")
-        elif answer == "4":
-            value = attack(character,team[character-1].super,team,enemies)
-            break
-        else:
-            input("You must write a valid number.")
-    if value == "":
-        return character
-    else:
-        return ""
+# def choose(mcharacter,team,tactical,enemies):
+    # q = listText(team[character-1].ability,"cancel",f"{team[character-1].super.name} ({tactical}%)")
+    # while True:
+    #     answer = input(f"Which ability would you like to use? {q}")
+    #     if answer == "cancel":
+    #         cancel = True
+    #         break
+    #     if answer == "1":
+    #         ability = 0
+    #         # value = attack(character,1,team,enemies)
+    #         break
+    #     elif answer == "2":
+    #         ability = 1
+    #         # value = attack(character,2,team,enemies)
+    #         break
+    #     elif answer == "3":
+    #         ability = 2
+    #         # value = attack(character,3,team,enemies)
+    #         break
+    #     elif answer == "4" and tactical != 100:
+    #         input("The ability must charge to 100% before it can be used. ")
+    #     elif answer == "4":
+    #         ability = 3
+    #         # value = attack(character,team[character-1].super,team,enemies)
+    #         break
+    #     else:
+    #         input("You must write a valid number.")
+    #         character = team[character-1]
+    #     ability = ability-1
+    #     while True:
+    #         if type(character.ability[ability]) == StandardAbility:
+    #             if character.ability[ability].target == "enemy":
+    #                 target = findTarget(enemies)
+    #             else:
+    #                 target = findTarget(team)
+    #             if target == "cancel":
+    #                 cancel = True
+    #                 break
+    #             if character.ability[ability].expType == "melee":
+    #                 proficiency = character.melee
+    #             if character.ability[ability].expType == "ranged":
+    #                 proficiency = character.range
+    #             if character.ability[ability].expType == "medicine":
+    #                 proficiency = character.med
+    #             if character.ability[ability].expType == "tactic":
+    #                 proficiency = character.tactic
+    #             if character.ability[ability].type == "kinetic":
+    #                 damage = character.ability[ability].value * proficiency - enemies[target].armour
+    #             if character.ability[ability].type == "energy":
+    #                 damage = character.ability[ability].value * proficiency - enemies[target].shield
+    #             if damage < 0:
+    #                 damage = 0
+    #             print(f"The enemies health was {enemies[target].hp}")
+    #             enemies[target].hp -= damage
+    #             print(f"The enemies health is now {enemies[target].hp}")
+    # if cancel == True:
+    #     return character
+    # else:
+    #     return ""
 
 def combat(team,enemies,tactical):
+    cancel = False
     activeTeam = team
     livingTeam = team
     character = ""
     while len(livingTeam) > 0 or len(enemies) > 0:
         while len(livingTeam) > 0:
+            cancel = False
             activeTeam = team
             character = ""
             q = listText(activeTeam,"inspect","")
             answer = input(f"Which character would you like to act? {q}")
             if answer == "1":
-                character = choose(1,livingTeam,tactical,enemies)
+                characterID = 0
             elif answer == "2" and len(activeTeam) > 1:
-                character = choose(2,livingTeam,tactical,enemies)
+                characterID = 1
             elif answer == "3" and len(activeTeam) > 2:
-                character = choose(3,livingTeam,tactical,enemies)
+                characterID = 2
             elif answer == "inspect":
-                inspect(livingTeam,tactical,enemies)
+                print("\nYour team consists of:")
+                for i in range(len(enemies)):
+                    print(f'''  -{livingTeam[i].name} with {livingTeam[i].hp} health.''')
+                print(f"The tactcial ability is at {tactical}%.")
+                print("\nThe enemies are:")
+                for i in range(len(enemies)):
+                    print(f'''  -{enemies[i].name} with {enemies[i].hp} health.\n''')
+                continue
             else:
                 input("You must write a valid number.")
+                continue
+            q = listText(team[characterID-1].ability,"cancel",f"{team[characterID-1].super.name} ({tactical}%)")
+            while True:
+                answer = input(f"Which ability would you like to use? {q}")
+                if answer == "cancel":
+                    cancel = True
+                    break
+                if answer == "1":
+                    ability = 0
+                    break
+                elif answer == "2":
+                    ability = 1
+                    break
+                elif answer == "3":
+                    ability = 2
+                    break
+                elif answer == "4" and tactical != 100:
+                    input("The ability must charge to 100% before it can be used. ")
+                elif answer == "4":
+                    ability = 3
+                    break
+                else:
+                    input("You must write a valid number.")
+            if cancel == True:
+                continue
+            character = team[characterID-1]
+            while True:
+                if type(character.ability[ability]) == StandardAbility:
+                    if character.ability[ability].target == "enemy":
+                        target = findTarget(enemies)
+                    else:
+                        target = findTarget(team)
+                    if target == "cancel":
+                        cancel = True
+                        break
+                    if character.ability[ability].expType == "melee":
+                        proficiency = character.melee
+                    if character.ability[ability].expType == "ranged":
+                        proficiency = character.range
+                    if character.ability[ability].expType == "medicine":
+                        proficiency = character.med
+                    if character.ability[ability].expType == "tactic":
+                        proficiency = character.tactic
+                    if character.ability[ability].type == "kinetic":
+                        damage = character.ability[ability].value * proficiency - enemies[target].armour
+                    if character.ability[ability].type == "energy":
+                        damage = character.ability[ability].value * proficiency - enemies[target].shield
+                    if damage < 0:
+                        damage = 0
+                    print(f"The enemies health was {enemies[target].hp}")
+                    enemies[target].hp -= damage
+                    print(f"The enemies health is now {enemies[target].hp}")
+                    break
+            if cancel == True:
                 continue
             if len(enemies) <= 0:
                 break
             if character != "":
                 print("1",team)
-                activeTeam.pop(character-1)
+                activeTeam.pop(characterID-1)
                 print("2",team)
             if activeTeam == []:
                 break
