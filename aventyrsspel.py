@@ -97,6 +97,15 @@ def listText(list,prepend,append):
         q = (f"{q}]")
     return q
 
+def inspect(team,tactical,enemies):
+    print("\nYour team consists of:")
+    for i in range(len(enemies)):
+        print(f'''  -{team[i].name} with {team[i].hp} health.''')
+    print(f"The tactcial ability is at {tactical}%.")
+    print("\nThe enemies are:")
+    for i in range(len(enemies)):
+        print(f'''  -{enemies[i].name} with {enemies[i].hp} health.\n''')
+
 def findTarget(side):
     q = listText(side,"cancel","")
     while True:
@@ -112,7 +121,7 @@ def findTarget(side):
             continue
         return answer-1
 
-def attack(character,ability,team):
+def attack(character,ability,team,enemies):
     character = team[character-1]
     ability = ability-1
     while True:
@@ -142,26 +151,25 @@ def attack(character,ability,team):
             print(f"The enemies health is now {enemies[target].hp}")
             return ""
 
-
-def choose(character,team):
+def choose(character,team,tactical,enemies):
     q = listText(team[character-1].ability,"cancel",f"{team[character-1].super.name} ({tactical}%)")
     while True:
         answer = input(f"Which ability would you like to use? {q}")
         if answer == "cancel":
             return ""
         if answer == "1":
-            value = attack(character,1,team)
+            value = attack(character,1,team,enemies)
             break
         elif answer == "2":
-            value = attack(character,2,team)
+            value = attack(character,2,team,enemies)
             break
         elif answer == "3":
-            value = attack(character,3,team)
+            value = attack(character,3,team,enemies)
             break
         elif answer == "4" and tactical != 100:
             input("The ability must charge to 100% before it can be used. ")
         elif answer == "4":
-            value = attack(character,team[character-1].super,team)
+            value = attack(character,team[character-1].super,team,enemies)
             break
         else:
             input("You must write a valid number.")
@@ -170,32 +178,33 @@ def choose(character,team):
     else:
         return ""
 
-
-def combat(team):
+def combat(team,enemies,tactical):
     activeTeam = team
     livingTeam = team
     character = ""
     while len(livingTeam) > 0 or len(enemies) > 0:
         while len(livingTeam) > 0:
-            activeTeam = fullTeam
+            activeTeam = team
             character = ""
-            q = listText(activeTeam,"","")
+            q = listText(activeTeam,"inspect","")
             answer = input(f"Which character would you like to act? {q}")
             if answer == "1":
-                character = choose(1,livingTeam)
+                character = choose(1,livingTeam,tactical,enemies)
             elif answer == "2" and len(activeTeam) > 1:
-                character = choose(2,livingTeam)
+                character = choose(2,livingTeam,tactical,enemies)
             elif answer == "3" and len(activeTeam) > 2:
-                character = choose(3,livingTeam)
+                character = choose(3,livingTeam,tactical,enemies)
+            elif answer == "inspect":
+                inspect(livingTeam,tactical,enemies)
             else:
                 input("You must write a valid number.")
                 continue
             if len(enemies) <= 0:
                 break
             if character != "":
-                print("1",fullTeam)
+                print("1",team)
                 activeTeam.pop(character-1)
-                print("2",fullTeam)
+                print("2",team)
             if activeTeam == []:
                 break
         print("Your turn has ended.")
@@ -203,15 +212,12 @@ def combat(team):
         while len(enemies) > 0:
             break
 
-
-
 def main():
     # if type(Railgun) == AdvancedAbility:
     #     print("success")
-    pass
+    fullTeam = [Rangewave]
+    enemies = [Spider]
+    tactical = 0
+    combat(fullTeam,enemies,tactical)
 
-fullTeam = [Rangewave]
-enemies = [Spider]
-tactical = 0
-combat(fullTeam)
 main()
