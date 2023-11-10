@@ -10,11 +10,10 @@ class StandardAbility:
         self.target = target
 
 class AdvancedAbility:
-    def __init__(self,name,desc,cost,type,target):
+    def __init__(self,name,desc,cost,target):
         self.name = name
         self.desc = desc
         self.cost = cost
-        self.type = type
         self.target = target
 
 class EnemyAbility:
@@ -50,10 +49,11 @@ class Enemy:
         self.shield = shield
         self.ability = []
         self.energy = 0
-
+        self.lvl = 0
+x = ""
 #melee
 Punch = StandardAbility("Punch","A fairly weak but universal form of hating someone.","melee",40,0,"kinetic","enemy")
-Swift_strike = AdvancedAbility("Swift strike","A swift double strike",0,"kinetic","enemy")
+Swift_strike = AdvancedAbility("Swift strike","A swift double strike",0,"enemy")
 #Swift_strike = StandardAbility("Swift strike","A swift double strike.","melee",20,0,"kinetic")
 
 #ranged
@@ -63,8 +63,9 @@ LROne_Blaster = StandardAbility("LR-1 Blaster","A standard issue energy blaster.
 Railgun = StandardAbility("Railgun","A powerful railgun which accelerates a bullet to immense speeds.","ranged",150,0,"kinetic","enemy")
 
 #characters
-Rangewave = Character("Rangewave","Proficient fighter.",2,1,1,2,1250,0,20,Railgun)
+Rangewave = Character("Rangewave","Proficient fighter.",1,1,1,1,1250,0,20,Railgun)
 Rangewave.ability = [Punch,Swift_strike,LROne_Blaster,Railgun]
+Rangewave.lvl = 1
 
 #enemy abilities
 Pounce = EnemyAbility("Pounce","A quick and easy pounce","melee",20,"team")
@@ -72,6 +73,7 @@ Pounce = EnemyAbility("Pounce","A quick and easy pounce","melee",20,"team")
 #enemies
 Spider = Enemy("Spider","A spider",500,0,0)
 Spider.ability = [[Pounce,100]]
+Spider.lvl = 1
 
 # print(f"The weight of this spiders pounce is {Spider.ability[0][1]}")
 #how multiple enemies??? They would all be the same, how copy objects
@@ -92,9 +94,9 @@ def listText(list,prepend,append):
         q = (f"{q}, {x+1}. {list[x].name}")
     if append != "":
         x += 1
-        q = (f"{q}, {x+1}. {append}")
-    else:
-        q = (f"{q}]")
+        # q = (f"{q}, {x+1}. {append}")
+        q = (f"{q} {append}")
+    q = (f"{q}]")
     return q
 
 def findTarget(side):
@@ -201,13 +203,20 @@ def findTarget(side):
     #     return character
     # else:
     #     return ""
-
-def combat(team,enemies,tactical):
+        
+def combat(team,enemies):
+    energy = 0
+    tactical = 0
     cancel = False
     activeTeam = team
     livingTeam = team
+    for i in range(len(team)):
+        team[i].hp = team[i].hp * team[i].lvl
+    for i in range(len(enemies)):
+        enemies[i].hp = enemies[i].hp * enemies[i].lvl
     character = ""
     while len(livingTeam) > 0 or len(enemies) > 0:
+        energy += 1
         while len(livingTeam) > 0:
             cancel = False
             activeTeam = team
@@ -225,6 +234,7 @@ def combat(team,enemies,tactical):
                 for i in range(len(enemies)):
                     print(f'''  -{livingTeam[i].name} with {livingTeam[i].hp} health.''')
                 print(f"The tactcial ability is at {tactical}%.")
+                print(f"The energy is at {energy}.")
                 print("\nThe enemies are:")
                 for i in range(len(enemies)):
                     print(f'''  -{enemies[i].name} with {enemies[i].hp} health.\n''')
@@ -232,7 +242,7 @@ def combat(team,enemies,tactical):
             else:
                 input("You must write a valid number.")
                 continue
-            q = listText(team[characterID-1].ability,"cancel",f"{team[characterID-1].super.name} ({tactical}%)")
+            q = listText(team[characterID].ability,"cancel",f"({tactical}%)")
             while True:
                 answer = input(f"Which ability would you like to use? {q}")
                 if answer == "cancel":
@@ -240,13 +250,28 @@ def combat(team,enemies,tactical):
                     break
                 if answer == "1":
                     ability = 0
-                    break
+                    if team[characterID].ability[ability].cost > energy:
+                        input(f"This ability costs {team[characterID].ability[ability].cost} energy but you only have {energy} energy.")
+                    elif team[characterID].ability[ability].cost > 0:
+                        answer = input(f"This ability has a cost of {energy} energy. Type y to proceed:")
+                        if answer == "y":
+                            break
                 elif answer == "2":
                     ability = 1
-                    break
+                    if team[characterID].ability[ability].cost > energy:
+                        input(f"This ability costs {team[characterID].ability[ability].cost} energy but you only have {energy} energy.")
+                    elif team[characterID].ability[ability].cost > 0:
+                        answer = input(f"This ability has a cost of {energy} energy. Type y to proceed:")
+                        if answer == "y":
+                            break
                 elif answer == "3":
                     ability = 2
-                    break
+                    if team[characterID].ability[ability].cost > energy:
+                        input(f"This ability costs {team[characterID].ability[ability].cost} energy but you only have {energy} energy.")
+                    elif team[characterID].ability[ability].cost > 0:
+                        answer = input(f"This ability has a cost of {energy} energy. Type y to proceed:")
+                        if answer == "y":
+                            break
                 elif answer == "4" and tactical != 100:
                     input("The ability must charge to 100% before it can be used. ")
                 elif answer == "4":
@@ -256,7 +281,7 @@ def combat(team,enemies,tactical):
                     input("You must write a valid number.")
             if cancel == True:
                 continue
-            character = team[characterID-1]
+            character = team[characterID]
             while True:
                 if type(character.ability[ability]) == StandardAbility:
                     if character.ability[ability].target == "enemy":
@@ -283,6 +308,31 @@ def combat(team,enemies,tactical):
                     print(f"The enemies health was {enemies[target].hp}")
                     enemies[target].hp -= damage
                     print(f"The enemies health is now {enemies[target].hp}")
+                    tactical += int((damage/10))
+                    print(f"Tactical: {tactical}%")
+                    energy -= team[characterID].ability[ability].cost
+                    break
+                if type(character.ability[ability]) == AdvancedAbility:
+                    if character.ability[ability].target == "enemy":
+                        target = findTarget(enemies)
+                    else:
+                        target = findTarget(team)
+                    if target == "cancel":
+                        cancel = True
+                        break
+                    abilityValue = character.ability[ability]
+                    if abilityValue == Swift_strike:
+                        for i in range(2):
+                            proficiency = character.melee
+                            damage = 20 * proficiency - enemies[target].armour
+                            if damage < 0:
+                                damage = 0
+                            print(f"The enemies health was {enemies[target].hp}")
+                            enemies[target].hp -= damage
+                            print(f"The enemies health is now {enemies[target].hp}")
+                            tactical += int((damage/10))
+                            print(f"Tactical: {tactical}%")  
+                    energy -= team[characterID].ability[ability].cost
                     break
             if cancel == True:
                 continue
@@ -290,7 +340,7 @@ def combat(team,enemies,tactical):
                 break
             if character != "":
                 print("1",team)
-                activeTeam.pop(characterID-1)
+                activeTeam.pop(characterID)
                 print("2",team)
             if activeTeam == []:
                 break
@@ -300,11 +350,8 @@ def combat(team,enemies,tactical):
             break
 
 def main():
-    # if type(Railgun) == AdvancedAbility:
-    #     print("success")
     fullTeam = [Rangewave]
     enemies = [Spider]
-    tactical = 0
-    combat(fullTeam,enemies,tactical)
+    combat(fullTeam,enemies)
 
 main()
