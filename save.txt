@@ -26,11 +26,12 @@ Target Practice
 Railgun
 Powerblade
 Energy blade
-Restoration
+Stand off
 end
 Team:
 Rangewave
 Firefly
+Target Practice
 end
 Abilities:
 Punch
@@ -40,3 +41,4 @@ Flame blast
 Restoration
 Energy blade
 end
+0

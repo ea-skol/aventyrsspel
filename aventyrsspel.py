@@ -13,11 +13,11 @@ class StandardAbility:
         self.target = target
 
 class AdvancedAbility:
-    def __init__(self,name,desc,value,expType,cost,type,target):
+    def __init__(self,name,desc,value,proficiency,cost,type,target):
         self.name = name
         self.desc = desc
         self.value = value
-        self.expType = expType
+        self.expType = proficiency
         self.cost = cost
         self.type = type
         self.target = target
@@ -63,13 +63,15 @@ class Enemy:
         self.lvl = 1
 
 #melee
-Punch = StandardAbility("Punch","A fairly weak but universal form of hating someone.","melee",40,0,"kinetic","enemy")
+Punch = StandardAbility("Punch","A fairly weak but universal form of hating someone.","melee",20,0,"kinetic","enemy")
 Swift_strike = AdvancedAbility("Swift strike","A swift double strike",20,"melee",0,"kinetic","enemy")
-Energy_blade = AdvancedAbility("Energy blade","A blade of energy.",10,"melee",0,"energy","")
+Energy_blade = AdvancedAbility("Energy blade","A blade of energy which slices through every enemy.",10,"melee",0,"energy","")
 
 #ranged
 LROne_Blaster = StandardAbility("LR-1 Blaster","A standard issue energy blaster.","ranged",30,2,"energy","enemy")
 Flame_blast = StandardAbility("Flame blast","A lunge of fire.","ranged",20,0,"kinetic","enemy")
+Dual_blasters = AdvancedAbility("Dual blasters","Two medium-range blasters which deliver double the trouble.",15,"ranged",1,"energy","enemy")
+XXI_Sniper = StandardAbility("XXI Sniper","A standard issue sniper rifle used by the VanGard.","ranged",30,0,"kinetic","enemy")
 
 #ability
 Restoration = AdvancedAbility("Restoration","Restore some health.",40,"medicine",1,"","team")
@@ -77,19 +79,20 @@ Restoration = AdvancedAbility("Restoration","Restore some health.",40,"medicine"
 #tactical
 Railgun = StandardAbility("Railgun","A powerful railgun which accelerates a bullet to immense speeds.","ranged",150,0,"kinetic","enemy")
 Powerblade = StandardAbility("Powerblade","A blade of pure power.","melee",130,0,"energy","enemy")
+Stand_off = AdvancedAbility("Stand off","Aim in on your target with high precision and deal extra damage.",1,"tactic",0,"","enemy")
 
 #characters
-Rangewave = Character("Rangewave","Proficient fighter.",2,1,1,1,950,0,20,Railgun)
-Rangewave.ability = [Punch,Swift_strike,LROne_Blaster,Railgun]
+Rangewave = Character("Rangewave","Proficient fighter of the VanGard.",2,1,1,1,950,0,20,Railgun)
+Rangewave.ability = [Punch,XXI_Sniper,LROne_Blaster,Railgun]
 
-Firefly = Character("Firefly","Fiery warrior",1,2,1,2,800,10,0,Powerblade)
-Firefly.ability = [Flame_blast,Restoration,LROne_Blaster,Powerblade]
+Firefly = Character("Firefly","Fiery warrior and mechanic.",1,2,1,2,800,10,0,Powerblade)
+Firefly.ability = [Flame_blast,Restoration,Energy_blade,Powerblade]
 
-Caveman = Character("Caveman","Is caveman.",1,1,1,1,1250,0,20,Railgun)
+Caveman = Character("Caveman","Strengthy brute who can take a hit.",1,1,1,1,1020,0,20,Railgun)
 Caveman.ability = [Punch,Swift_strike,LROne_Blaster,Railgun]
 
-Target_practice = Character("Target Practice","Testy.",1,1,1,1,1250,0,20,Restoration)
-Target_practice.ability = [Railgun,Powerblade,Energy_blade,Restoration]
+Target_practice = Character("Target Practice","Never misses. Does not wear a blindfold.",1,1,1,1,900,0,20,Restoration)
+Target_practice.ability = [Dual_blasters,Energy_blade,LROne_Blaster,Stand_off]
 
 #enemy abilities
 Pounce = StandardEnemyAbility("Pounce","A quick and easy pounce","kinetic",20,"team")
@@ -106,8 +109,8 @@ Bullseye.ability = [copy(Shoot),copy(Charge)]
 Bullseye.ability[0].weight = 3
 Bullseye.ability[1].weight = 1
 
-#global list == bad?
-levels = [[Spider,Spider],[Spider,Bullseye,Spider]]
+#levels
+levels = [[copy(Spider),copy(Spider)],[copy(Spider),copy(Bullseye),copy(Spider)]]
 
 #functions
 def listText(list,prepend,append):
@@ -146,7 +149,7 @@ def filterList(list,antiFilter):
             returnValue.append(list[i])
     return returnValue
 
-def dealDamage(caster,abilityID,casterList,targetList,targetID):
+def dealDamage(caster,abilityID,targetList,targetID):
     if caster.ability[abilityID].expType == "melee":
         proficiency = caster.melee
     if caster.ability[abilityID].expType == "ranged":
@@ -157,7 +160,7 @@ def dealDamage(caster,abilityID,casterList,targetList,targetID):
         proficiency = caster.tactic
     if caster.ability[abilityID].type == "kinetic":
         damage = caster.ability[abilityID].value * proficiency - targetList[targetID].armour
-    if caster.ability[abilityID].type == "energy":
+    elif caster.ability[abilityID].type == "energy":
         damage = caster.ability[abilityID].value * proficiency - targetList[targetID].shield
     if damage < 0:
         damage = 0
@@ -177,11 +180,12 @@ def tacticalCalc(inputDamage,charge):
 def combat(team,enemies):
     xp = 0
     energy = 0
-    tactical = 0
+    tactical = 100
     cancel = False
     activeTeam = copy(team)
     livingTeam = team
     turnCounter = 0
+    counter = ["x"]
     for i in range(len(team)):
         team[i].hp = team[i].hp * team[i].lvl
     for i in range(len(enemies)):
@@ -189,6 +193,14 @@ def combat(team,enemies):
     character = ""
     while len(livingTeam) > 0 and len(enemies) > 0:
         turnCounter += 1
+        for i in range(len(counter)):
+            if counter[i] != "x":
+                counter[i][0] -= 1
+                if counter[i][0] == 0:
+                    if i == 0:
+                        counter[0][1].range -= 1
+                    elif i == 1:
+                        pass
         energy += 1
         activeTeam = copy(team)
         while len(livingTeam) > 0:
@@ -271,7 +283,7 @@ def combat(team,enemies):
                     if targetID == "c":
                         cancel = True
                         break
-                    enemies,damage = dealDamage(character,ability,activeTeam,enemies,targetID)
+                    enemies,damage = dealDamage(character,ability,enemies,targetID)
                     tactical += tacticalCalc(damage,tactical)
                     if ability == 3:
                         tactical = 0
@@ -288,10 +300,10 @@ def combat(team,enemies):
                         if targetID == "c":
                             cancel = True
                             break
-                        enemies,damage = dealDamage(character,ability,activeTeam,enemies,targetID)
+                        enemies,damage = dealDamage(character,ability,enemies,targetID)
                         tactical += tacticalCalc(damage,tactical)
                         print(f"Tactical: {tactical}%\n")
-                        enemies,damage = dealDamage(character,ability,activeTeam,enemies,targetID)
+                        enemies,damage = dealDamage(character,ability,enemies,targetID)
                         tactical += tacticalCalc(damage,tactical)
                         print(f"Tactical: {tactical}%\n")
                     if abilityValue == Restoration:
@@ -316,6 +328,20 @@ def combat(team,enemies):
                             print(f"The enemy's health is now {enemies[i].hp}")
                             tactical += tacticalCalc(damage,tactical)
                             print(f"Tactical: {tactical}%\n")
+                    if abilityValue == Stand_off:
+                        character.range += 1
+                        counter[0] = [3,character]
+                    if abilityValue == Dual_blasters:
+                        targetID = findTarget(enemies)
+                        if targetID == "c":
+                            cancel = True
+                            break
+                        enemies,damage = dealDamage(character,ability,enemies,targetID)
+                        tactical += tacticalCalc(damage,tactical)
+                        print(f"Tactical: {tactical}%\n")
+                        enemies,damage = dealDamage(character,ability,enemies,targetID)
+                        tactical += tacticalCalc(damage,tactical)
+                        print(f"Tactical: {tactical}%\n")
 
                     energy -= livingTeam[characterID].ability[ability].cost
                     break
@@ -543,7 +569,7 @@ def edit(team,all,abilities):
             input("You must write a valid answer.")
             continue
 
-def saveGame(team,characters,abilities):
+def saveGame(team,characters,abilities,level):
     q = "Characters:\n"
     for i in range(len(characters)):
         q = f"{q}{characters[i].name}\n"
@@ -560,10 +586,11 @@ def saveGame(team,characters,abilities):
     for i in range(len(abilities)):
         q = f"{q}{abilities[i].name}\n"
     q = f"{q}end\n"
+    q = f"{q}{level}\n"
     return q
 
 def loadGame(allCharacters,allAbilities):
-    f = open("Prr/aventyrsspel/save.txt", "r")
+    f = open("Prr/aventyrsspel/save.txt")
     q = ""
     returnTeam = []
     returnCharacters = []
@@ -609,7 +636,8 @@ def loadGame(allCharacters,allAbilities):
                 returnAbilities.append(allAbilities[i])
                 break
         line = f.readline()
-    return returnTeam,returnCharacters,returnAbilities
+    level = int(f.readline())
+    return returnTeam,returnCharacters,returnAbilities,level
 
 def main():
     f = open("Prr/aventyrsspel/save.txt", "a")
@@ -617,40 +645,38 @@ def main():
     while True:
         answer = input("Load save? y/n")
         if answer == "y":
-            f = open("Prr/aventyrsspel/save.txt", "r")
+            f = open("Prr/aventyrsspel/save.txt")
             if f.readline() != "Characters:\n":
                 print("There seems to be a problem with the file.\nFix it and try to load it again.")
                 quit()
             allCharacters = [Rangewave,Firefly,Caveman,Target_practice]
             allAbilities = [Punch,Swift_strike,LROne_Blaster,Flame_blast,Restoration,Energy_blade,Railgun,Powerblade]
-            fullTeam,unlockedCharacters,unlockedAbilities = loadGame(allCharacters,allAbilities)
+            fullTeam,unlockedCharacters,unlockedAbilities,level = loadGame(allCharacters,allAbilities)
             input("Loaded save")
             break
         else:
             input("Creating new game")
-            fullTeam = [Rangewave,Firefly]
+            fullTeam = [Rangewave,Firefly,Target_practice]
             unlockedCharacters = [Rangewave,Firefly,Caveman,Target_practice]
             unlockedAbilities = [Punch,Swift_strike,LROne_Blaster,Flame_blast,Restoration,Energy_blade]
+            level = 0
             break
-    # fullTeam = [Rangewave,Firefly]
-    # unlockedCharacters = [Rangewave,Firefly,Caveman,Target_practice]
-    enemies = copy(levels[1])
+    enemies = copy(levels[level])
     while True:
-        enemies = [copy(Spider),copy(Spider),copy(Bullseye)]
         answer = input("Do smthng: [c(ombat), e(dit)]")
         if answer == "c":
             fullTeam = combat(fullTeam,enemies)
             answer = ""
+            level += 1
         elif answer == "e":
             fullTeam,unlockedCharacters = edit(fullTeam,unlockedCharacters,unlockedAbilities)
             answer = ""
         elif answer == "b":
             answer = ""
             break
+        q = saveGame(fullTeam,unlockedCharacters,unlockedAbilities,level)
         f = open("Prr/aventyrsspel/save.txt", "w")
-        q = saveGame(fullTeam,unlockedCharacters,unlockedAbilities)
         f.write(q)
         f.close()
-
 
 main()
