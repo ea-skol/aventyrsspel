@@ -88,6 +88,9 @@ Firefly.ability = [Flame_blast,Restoration,LROne_Blaster,Powerblade]
 Caveman = Character("Caveman","Is caveman.",1,1,1,1,1250,0,20,Railgun)
 Caveman.ability = [Punch,Swift_strike,LROne_Blaster,Railgun]
 
+Target_practice = Character("Target Practice","Testy.",1,1,1,1,1250,0,20,Restoration)
+Target_practice.ability = [Railgun,Powerblade,Energy_blade,Restoration]
+
 #enemy abilities
 Pounce = StandardEnemyAbility("Pounce","A quick and easy pounce","kinetic",20,"team")
 Shoot = StandardEnemyAbility("Shoot","Shoots","energy",30,"team")
@@ -103,6 +106,9 @@ Bullseye.ability = [copy(Shoot),copy(Charge)]
 Bullseye.ability[0].weight = 3
 Bullseye.ability[1].weight = 1
 
+#global list == bad?
+levels = [[Spider,Spider],[Spider,Bullseye,Spider]]
+
 #functions
 def listText(list,prepend,append):
     if prepend != "":
@@ -111,8 +117,8 @@ def listText(list,prepend,append):
         q = f"[1. {list[0].name}"
     for x in range (1,len(list)):
         q = (f"{q}, {x+1}. {list[x].name}")
-    if append != "":
-        x += 1
+    if append != "": 
+        # x += 1
         q = (f"{q} {append}")
     q = (f"{q}]")
     return q
@@ -290,6 +296,9 @@ def combat(team,enemies):
                         print(f"Tactical: {tactical}%\n")
                     if abilityValue == Restoration:
                         targetID = findTarget(livingTeam)
+                        if targetID == "c":
+                            cancel = True
+                            break
                         livingTeam[targetID].hp += abilityValue.value
                         if livingTeam[targetID].hp > livingTeam[targetID].maxhp:
                             livingTeam[targetID].hp = livingTeam[targetID].maxhp
@@ -534,11 +543,86 @@ def edit(team,all,abilities):
             input("You must write a valid answer.")
             continue
 
+def saveGame(team,characters,abilities):
+    q = "Characters:\n"
+    for i in range(len(characters)):
+        q = f"{q}{characters[i].name}\n"
+        q = f"{q}{characters[i].xp}\n"
+        q = f"{q}{characters[i].lvl}\n"
+        for x in range(4):
+            q = f"{q}{characters[i].ability[x].name}\n"
+    q = f"{q}end\n"
+    q = f"{q}Team:\n"
+    for i in range(len(team)):
+        q = f"{q}{team[i].name}\n"
+    q = f"{q}end\n"
+    q = f"{q}Abilities:\n"
+    for i in range(len(abilities)):
+        q = f"{q}{abilities[i].name}\n"
+    q = f"{q}end\n"
+    return q
+
+def loadGame(allCharacters,allAbilities):
+    f = open("Prr/aventyrsspel/save.txt", "r")
+    q = ""
+    x = ""
+    returnTeam = []
+    returnCharacters = []
+    line = f.readline()
+    line = f.readline()
+    while line != "end\n":
+        for i in range(len(allCharacters)):
+            if (allCharacters[i].name + "\n") == line:
+                returnCharacters.append(allCharacters[i])
+                line = f.readline()
+                returnCharacters[len(returnCharacters)-1].xp = int(line)
+                line = f.readline()
+                returnCharacters[len(returnCharacters)-1].lvl = int(line)
+                line = f.readline()
+                for x in range(len(allAbilities)):
+                    if (allAbilities[x].name + "\n") == line:
+                        returnCharacters[len(returnCharacters)-1].ability[0] = allAbilities[x]
+                        break
+                line = f.readline()
+                for x in range(len(allAbilities)):
+                    if (allAbilities[x].name + "\n") == line:
+                        returnCharacters[len(returnCharacters)-1].ability[1] = allAbilities[x]
+                        break
+                line = f.readline()
+                for x in range(len(allAbilities)):
+                    if (allAbilities[x].name + "\n") == line:
+                        returnCharacters[len(returnCharacters)-1].ability[2] = allAbilities[x]
+                        break
+                break
+        line = f.readline()
+    line = f.readline()
+    while line != "end\n":
+        break
+    return returnTeam,returnCharacters,[]
+
 def main():
-    fullTeam = [Rangewave,Firefly]
-    unlockedCharacters = [Rangewave,Firefly,Caveman]
-    enemies = [copy(Spider),copy(Spider),copy(Bullseye)]
-    unlockedAbilities = [Punch,Swift_strike,LROne_Blaster,Flame_blast,Restoration,Energy_blade]
+    # f = open("Prr/aventyrsspel/save.txt", "x")
+    while True:
+        answer = input("Load save? y/n")
+        if answer == "y":
+            f = open("Prr/aventyrsspel/save.txt", "r")
+            if f.readline() != "Characters:\n":
+                print("There seems to be a problem with the file.\nFix it and try to load it again.")
+                quit()
+            allCharacters = [Rangewave,Firefly,Caveman,Target_practice]
+            allAbilities = [Punch,Swift_strike,LROne_Blaster,Flame_blast,Restoration,Energy_blade,Railgun,Powerblade]
+            fullTeam,unlockedCharacters,unlockedAbilities = loadGame(allCharacters,allAbilities)
+            input("Loaded save")
+            break
+        else:
+            input("Creating new game")
+            fullTeam = [Rangewave,Firefly]
+            unlockedCharacters = [Rangewave,Firefly,Caveman,Target_practice]
+            unlockedAbilities = [Punch,Swift_strike,LROne_Blaster,Flame_blast,Restoration,Energy_blade]
+            break
+    # fullTeam = [Rangewave,Firefly]
+    # unlockedCharacters = [Rangewave,Firefly,Caveman,Target_practice]
+    enemies = copy(levels[1])
     while True:
         enemies = [copy(Spider),copy(Spider),copy(Bullseye)]
         answer = input("Do smthng: [c(ombat), e(dit)]")
@@ -551,5 +635,10 @@ def main():
         elif answer == "b":
             answer = ""
             break
+        f = open("Prr/aventyrsspel/save.txt", "w")
+        q = saveGame(fullTeam,unlockedCharacters,unlockedAbilities)
+        f.write(q)
+        f.close()
+
 
 main()

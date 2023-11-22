@@ -1,0 +1,42 @@
+Characters:
+Rangewave
+0
+1
+Punch
+Swift strike
+LR-1 Blaster
+Railgun
+Firefly
+0
+1
+Flame blast
+Restoration
+LR-1 Blaster
+Powerblade
+Caveman
+0
+1
+Punch
+Swift strike
+LR-1 Blaster
+Railgun
+Target Practice
+0
+1
+Railgun
+Powerblade
+Energy blade
+Restoration
+end
+Team:
+Rangewave
+Firefly
+end
+Abilities:
+Punch
+Swift strike
+LR-1 Blaster
+Flame blast
+Restoration
+Energy blade
+end
