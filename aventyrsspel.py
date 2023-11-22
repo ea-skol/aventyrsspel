@@ -565,9 +565,9 @@ def saveGame(team,characters,abilities):
 def loadGame(allCharacters,allAbilities):
     f = open("Prr/aventyrsspel/save.txt", "r")
     q = ""
-    x = ""
     returnTeam = []
     returnCharacters = []
+    returnAbilities = []
     line = f.readline()
     line = f.readline()
     while line != "end\n":
@@ -597,11 +597,23 @@ def loadGame(allCharacters,allAbilities):
         line = f.readline()
     line = f.readline()
     while line != "end\n":
-        break
-    return returnTeam,returnCharacters,[]
+        for i in range(len(allCharacters)):
+            if (allCharacters[i].name + "\n") == line:
+                returnTeam.append(allCharacters[i])
+                break
+        line = f.readline()
+    line = f.readline()
+    while line != "end\n":
+        for i in range(len(allAbilities)):
+            if (allAbilities[i].name + "\n") == line:
+                returnAbilities.append(allAbilities[i])
+                break
+        line = f.readline()
+    return returnTeam,returnCharacters,returnAbilities
 
 def main():
-    # f = open("Prr/aventyrsspel/save.txt", "x")
+    f = open("Prr/aventyrsspel/save.txt", "a")
+    f.close()
     while True:
         answer = input("Load save? y/n")
         if answer == "y":
