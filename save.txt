@@ -1,17 +1,17 @@
 Characters:
 Rangewave
-0
+162
 1
 Punch
-Swift strike
+XXI Sniper
 LR-1 Blaster
 Railgun
 Firefly
-0
+162
 1
 Flame blast
 Restoration
-LR-1 Blaster
+Energy blade
 Powerblade
 Caveman
 0
@@ -19,13 +19,13 @@ Caveman
 Punch
 Swift strike
 LR-1 Blaster
-Railgun
+Earthquake
 Target Practice
-0
+162
 1
-Railgun
-Powerblade
+Dual blasters
 Energy blade
+LR-1 Blaster
 Stand off
 end
 Team:
@@ -41,4 +41,4 @@ Flame blast
 Restoration
 Energy blade
 end
-0
+2
