@@ -45,7 +45,7 @@ class Character:
         self.name = name
         self.desc = desc
         self.lvl = 1
-        self.defaultValues = [melee,ranged,medicine,tactic,health]
+        self.defaultValues = [melee,ranged,medicine,tactic,health,armour,shield]
         self.melee = melee
         self.range = ranged
         self.med = medicine
@@ -85,23 +85,24 @@ XXI_Sniper = StandardAbility("XXI Sniper","A standard issue sniper rifle used by
 LRX_Blaster = StandardAbility("LR-X Blaster","Standard issue blaster for officers within the VanGard.","ranged",30,1,"energy","enemy")
 
 #ability
-Restoration = AdvancedAbility("Restoration","Restore some health.",80,"medicine",1,"","team")
+Restoration = AdvancedAbility("Restoration","Restore some health.",80,"medicine",2,"","team")
+Energy_shield = AdvancedAbility("ESG","Energy Shield Generator which grants extra shield for 2 rounds.",10,"tactic",2,"","team")
 
 #tactical
-Railgun = StandardAbility("Railgun","A powerful railgun which accelerates a bullet to immense speeds.","ranged",200,0,"kinetic","enemy")
+Railgun = StandardAbility("Railgun","A powerful railgun which accelerates a bullet to immense speeds.","ranged",100,0,"kinetic","enemy")
 Powerblade = StandardAbility("Powerblade","A blade of pure power.","melee",180,0,"energy","enemy")
 Stand_off = AdvancedAbility("Stand off","Aim in on your target with high precision and deal extra damage.",1,"tactic",0,"","enemy")
 Earthquake = AdvancedAbility("Earthquake","Shatter the ground damaging enemies",100,"melee",0,"kinetic","enemy")
 Command = AdvancedAbility("Command","An encouraging command to fight better. Doubles all melee damage for 1 round.",1,"tactic",0,"","team")
 
 #characters
-Rangewave = Character("Rangewave","Proficient fighter of the VanGard.",1,2,1,1,950,0,10,Railgun)
+Rangewave = Character("Rangewave","Proficient fighter of the VanGard.",1,2,1,1,880,0,10,Railgun)
 Rangewave.ability = [Combat_knife,XXI_Sniper,LROne_Blaster,Railgun]
 
 General_Borg = Character("General Borg","General Attus Borg is a general within the VanGard.",1,2,1,2,900,0,0,Command)
 General_Borg.ability = [Combat_knife,Restoration,LRX_Blaster,Command]
 
-Firefly = Character("Firefly","Fiery warrior and mechanic.",1,2,1,2,800,10,0,Powerblade)
+Firefly = Character("Firefly","Fiery warrior and mechanic of the VanGard. From the planet Laito.",1,2,1,2,900,10,0,Powerblade)
 Firefly.ability = [Flame_blast,Restoration,Energy_blade,Powerblade]
 
 Caveman = Character("Caveman","Strengthy brute who can take a hit.",1,1,1,1,1020,0,20,Earthquake)
@@ -111,19 +112,25 @@ Target_practice = Character("Target Practice","Never misses. Does not wear a bli
 Target_practice.ability = [Dual_blasters,Energy_blade,LROne_Blaster,Stand_off]
 
 #enemy abilities
-Pounce = StandardEnemyAbility("Pounce","A quick and easy pounce","kinetic",30,"team")
-Shoot = StandardEnemyAbility("Shoot","Shoots","energy",40,"team")
-Charge = StandardEnemyAbility("Charge","Charges","kinetic",70,"team")
+Pounce = StandardEnemyAbility("Pounce","A quick and easy pounce","kinetic",20,"team")
+Claw = StandardEnemyAbility("Claw","A quick attack made by claws","kinetic",30,"team")
+FC_DBlasters = StandardEnemyAbility("FC Dual blasters","Two blasters used by famed bounty hunter Bullseye.","energy",40,"team")
+Charge = StandardEnemyAbility("Charge","Rush towards the enemy.","kinetic",70,"team")
 C58_Grenade = AdvancedEnemyAbility("C58 Grenade","A grenade.","energy",30,"team")
 TTI_Blaster = StandardEnemyAbility("TTI Blaster","Standard issue Exi blaster.","energy",50,"team")
 
 #enemies
+Critter = Enemy("Critter","Small but oversized desert dwelling insect.",180,0,0)
+Critter.ability = [copy(Pounce),copy(Claw)]
+Critter.ability[0].weight = 3
+Critter.ability[1].weight = 1
+
 Spider = Enemy("Spider","A spider",150,0,0)
 Spider.ability = [copy(Pounce)]
 Spider.ability[0].weight = 1
 
-Bullseye = Enemy("Bullseye","Famed bounty hunter",340,15,10)
-Bullseye.ability = [copy(Shoot),copy(Charge)]
+Bullseye = Enemy("Bullseye","Famed bounty hunter",740,15,10)
+Bullseye.ability = [copy(FC_DBlasters),copy(Charge)]
 Bullseye.ability[0].weight = 3
 Bullseye.ability[1].weight = 1
 
@@ -139,7 +146,7 @@ Exi_Canoneer.ability[0].weight = 4
 Exi_Canoneer.ability[1].weight = 1
 
 #levels
-levels = [[Exi_trooper,Exi_trooper],[Spider,Bullseye,Spider],[Exi_trooper,Exi_Canoneer,Exi_trooper]]
+levels = [[Exi_trooper,Exi_trooper],[Critter,Critter,Critter],[Exi_trooper,Exi_Canoneer,Exi_trooper],[Exi_trooper,Bullseye,Exi_trooper]]
 
 #functions
 def listText(list,prepend,append):
@@ -207,15 +214,19 @@ def tacticalCalc(inputDamage,charge):
         return int(inputDamage/8)
 
 def combat(team,enemies):
+    q = []
+    for i in range(len(enemies)):
+        q.append(enemies[i].name)
+    input(f"You encountered: {q}")
     exitType = "x"
     xp = 0
     energy = 0
-    tactical = 100
+    tactical = 0
     cancel = False
     activeTeam = copy(team)
     livingTeam = team
     turnCounter = 0
-    counter = ["x","x"]
+    counter = ["x","x","x"]
     for i in range(len(team)):
         team[i].hp = team[i].hp * team[i].lvl
     for i in range(len(enemies)):
@@ -234,6 +245,9 @@ def combat(team,enemies):
                         for x in range(len(livingTeam)):
                             livingTeam[x].melee -= 1
                         counter[1] = "x"
+                    elif i == 2:
+                        counter[2][1].shield -= Energy_shield.value
+                        counter[2] = "x"
         energy += 1
         activeTeam = copy(team)
         while len(livingTeam) > 0:
@@ -393,7 +407,14 @@ def combat(team,enemies):
                             livingTeam[i].melee += 1
                         counter[1] = [2,"all"]
                         tactical = 0
-                    energy -= livingTeam[characterID].ability[ability].cost
+                    if abilityValue == Energy_shield:
+                        targetID = findTarget(livingTeam)
+                        if targetID == "c":
+                            cancel = True
+                            break
+                        livingTeam[targetID].shield += abilityValue.value
+                        counter[2] = [2,livingTeam[targetID]]
+                    energy -= activeTeam[characterID].ability[ability].cost
                     break
             if cancel == True:
                 continue
@@ -486,8 +507,10 @@ def combat(team,enemies):
                 team[i].range = team[i].defaultValues[1] * team[i].lvl
                 team[i].med = team[i].defaultValues[2] * team[i].lvl
                 team[i].tactic = team[i].defaultValues[3] * team[i].lvl
-                team[i].hp = team[i].defaultValues[4] + 100 * team[i].lvl
-                team[i].maxhp = team[i].defaultValues[4] + 100 * team[i].lvl
+                team[i].hp = team[i].defaultValues[4] + 100 * (team[i].lvl - 1)
+                team[i].maxhp = team[i].defaultValues[4] + 100 * (team[i].lvl - 1)
+                team[i].armour = team[i].defaultValues[5]
+                team[i].shield = team[i].defaultValues[6]
         return team,exitType
 
 def edit(team,all,abilities):
@@ -601,7 +624,7 @@ def edit(team,all,abilities):
                         if answer == "c":
                             break
                         elif answer == "i":
-                            print(f"{team[characterID].name}: {team[characterID].desc}")
+                            print(f"\n{team[characterID].name}: {team[characterID].desc}")
                             print(f"{team[characterID].name} has {team[characterID].xp}xp and is at level {team[characterID].lvl}.")
                             print(f"Their proficiencies are: {team[characterID].melee} melee, {team[characterID].range} ranged, {team[characterID].med} medicine and {team[characterID].tactic} tactical.")
                             input(f"Their health is {team[characterID].hp}hp.")
@@ -656,6 +679,40 @@ def playDialogue(level,dialogue):
             input("Another ship approaches and drops of Exi-troopers.")
             input("The troops rush towards Borg and Rangewave who are caught alone amidst the now ensuing chaos.")
             input('''General Borg: "Rangewave! I'll cover you!"''')
+        if level == 1:
+            input('General Borg: "That was a close one. But now we are in trouble."')
+            input('General Borg: "We must launch a counterattack immediately!"')
+            input('General Borg: "Rangewave! Grab a hoverbike and approach the Exi base. A team will assist you with aircract shortly."')
+            input("Rangewave jumps on the hoverbike and goes towards the Exi base.")
+            input("Suddenly, the bike stops.")
+            input('Rangewave: "Dammit! This is Rangewave, the bike broke down, over."')
+            input('Comms: "We hear you. Give us your location, over."')
+            input('''Rangewave: "34'56a."''')
+            input('Comms: "Aircraft will be inbound shortly, over."')
+            input('Rangewave: "Copy."')
+            input("A whisp of wind blows past in the empt desert.")
+            input("Rangewave looks around and notices a small group of oversized insects approaching.")
+            input('Rangewave: "This is Rangewave, I have a pack of critters approaching, over"')
+            input('Comms: "The aircraft is soon there, over."')
+            input('Rangewave: "Copy."')
+            input("Rangewave shoots at the critters which only seems to anger them, and they approach and jump towards Rangewave in an attack.")
+        if level == 2:
+            input("A ship approaches over Rangewave who jumps aboard it as a new hoard of critters approach.")
+            input('Firefly: "My name is Firefly. We are approaching the Exi base and when we arrive you and I will be on the ground."')
+            input('Rangewave: "Copy!"')
+            input("The ship approaches the Exi base and as it does oncoming fire forces them to fly low.")
+            input('''Firefly: "We're going to have to settle down here! Get ready to jump!"''')
+            input("Firefly and Rangewave jump out of the ship and approach the base.")
+            input("A group of Exi soliders approaches them from the gates of the base.")
+        if level == 3:
+            input('Comms: "This is General Borg! We have located where in the base the scout is held."')
+            input('''Firefly: "Send us the position and we'll get on it!"''')
+            input("After a few seconds a beep is heard.")
+            input('''Firefly: "Position recieved! Let's go!"''')
+            input("The team goes into the base and approaches the location of the scout.")
+            input("Suddenly, a blast flies past them.")
+            input('Bullseye: "Well then, look what we got here!"')
+            input('''Bullseye: "Name's Bullseye, famed bounty hunter, and wherever you're going you're not going any further."''')
 
 def saveGame(team,characters,abilities,level):
     q = "Characters:\n"
@@ -732,52 +789,91 @@ def main():
     f.close()
     dialogue = 0
     while True:
-        answer = input("Load save? y/n")
+        answer = input("Load save? y/n:")
         if answer == "y":
             f = open("Prr/aventyrsspel/save.txt")
             if f.readline() != "Characters:\n":
                 print("There seems to be a problem with the file.\nFix it and try to load it again.")
                 quit()
-            allCharacters = [Rangewave,Firefly,Caveman,Target_practice]
-            allAbilities = [Punch,Swift_strike,LROne_Blaster,Flame_blast,Restoration,Energy_blade,Railgun,Powerblade]
+            allCharacters = [Rangewave,General_Borg,Firefly,Caveman,Target_practice]
+            allAbilities = [Punch,Swift_strike,LROne_Blaster,Flame_blast,Restoration,Energy_blade,Railgun,Powerblade,Energy_shield]
             fullTeam,unlockedCharacters,unlockedAbilities,level = loadGame(allCharacters,allAbilities)
             input("Loaded save [Enter]")
             break
+        elif answer == "n":
+            answer = input("This will overwrite any existing saves. Are you sure? [y(es)/anything else]")
+            if answer == "y":
+                input("Creating new game [Enter]")
+                fullTeam = [Rangewave,General_Borg]
+                unlockedCharacters = [Rangewave]
+                unlockedAbilities = [Combat_knife,XXI_Sniper,LROne_Blaster]
+                level = 0
+                break
         else:
-            input("Creating new game [Enter]")
-            fullTeam = [Rangewave,General_Borg]
-            unlockedCharacters = [Rangewave]
-            unlockedAbilities = [Combat_knife,XXI_Sniper,LROne_Blaster,Railgun]
-            level = 0
-            break
+            input("Invalid input")
     while True:
         playDialogue(level,dialogue)
         dialogue = 1
-        enemies = []
-        for i in range(len(levels[level])):
-            enemies.append(copy(levels[level][i]))
-        if level == 0:
+        if level < 4:
+            enemies = []
+            for i in range(len(levels[level])):
+                enemies.append(copy(levels[level][i]))
             fullTeam,exitType = combat(fullTeam,enemies)
             if exitType == "victory":
+                if level == 0:
+                    fullTeam.remove(General_Borg)
+                if level == 1:
+                    fullTeam.append(Firefly)
+                    unlockedCharacters.append(Firefly)
+                    unlockedAbilities.append(Flame_blast)
+                    unlockedAbilities.append(Restoration)
+                    unlockedAbilities.append(Energy_blade)
                 level += 1
                 dialogue = 0
             for i in range(len(fullTeam)):
                 fullTeam[i].hp = fullTeam[i].maxhp
-        answer = input("Do smthng: [c(ombat), e(dit)]")
-        if answer == "c":
-            fullTeam,exitType = combat(fullTeam,enemies)
-            if exitType == "victory":
-                level += 1
-                dialogue = 0
-            for i in range(len(fullTeam)):
-                fullTeam[i].hp = fullTeam[i].maxhp
-            answer = ""
-        elif answer == "e":
-            fullTeam,unlockedCharacters = edit(fullTeam,unlockedCharacters,unlockedAbilities)
-            answer = ""
-        elif answer == "b":
-            answer = ""
-            break
+        else:
+            answer = input("What would you like to do? [c(ombat), e(dit team)], [s(ave game])]")
+            if answer == "c":
+                while True:
+                    levelsNum = []
+                    levelsNum.append("c(ancel)")
+                    for i in range(level+1):
+                        levelsNum.append(i+1)
+                    answer = input(f"Select level: {levelsNum}")
+                    if answer == "c":
+                        break
+                    try:
+                        answer = int(answer)
+                    except ValueError:
+                        input("Write a valid input")
+                        continue
+                    answer -= 1
+                    break
+                if answer == "c":
+                    continue
+                enemies = []
+                for i in range(len(levels[answer])):
+                    enemies.append(copy(levels[answer][i]))
+                fullTeam,exitType = combat(fullTeam,enemies)
+                if exitType == "victory":
+                    level += 1
+                    dialogue = 0
+                for i in range(len(fullTeam)):
+                    fullTeam[i].hp = fullTeam[i].maxhp
+                answer = ""
+            elif answer == "e":
+                fullTeam,unlockedCharacters = edit(fullTeam,unlockedCharacters,unlockedAbilities)
+                answer = ""
+            elif answer == "b":
+                answer = ""
+                break
+            elif answer == "s":
+                q = saveGame(fullTeam,unlockedCharacters,unlockedAbilities,level)
+                f = open("Prr/aventyrsspel/save.txt", "w")
+                f.write(q)
+                f.close()
+                input("Saved game")
         q = saveGame(fullTeam,unlockedCharacters,unlockedAbilities,level)
         f = open("Prr/aventyrsspel/save.txt", "w")
         f.write(q)

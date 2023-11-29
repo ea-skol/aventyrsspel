@@ -1,44 +1,28 @@
 Characters:
 Rangewave
-162
+321
 1
-Punch
+Combat knife
 XXI Sniper
 LR-1 Blaster
 Railgun
 Firefly
-162
+211
 1
 Flame blast
 Restoration
 Energy blade
 Powerblade
-Caveman
-0
-1
-Punch
-Swift strike
-LR-1 Blaster
-Earthquake
-Target Practice
-162
-1
-Dual blasters
-Energy blade
-LR-1 Blaster
-Stand off
 end
 Team:
 Rangewave
 Firefly
-Target Practice
+Add character
 end
 Abilities:
-Punch
-Swift strike
 LR-1 Blaster
 Flame blast
 Restoration
 Energy blade
 end
-2
+4
