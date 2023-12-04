@@ -79,10 +79,11 @@ Combat_knife = StandardAbility("Combat knife","A simple combat knife.","melee",3
 
 #ranged
 LROne_Blaster = StandardAbility("LR-1 Blaster","A standard issue energy blaster.","ranged",60,2,"energy","enemy")
-Flame_blast = StandardAbility("Flame blast","A lunge of fire.","ranged",30,0,"kinetic","enemy")
+Flame_blast = StandardAbility("Flame blast","A lunge of fire.","ranged",40,0,"kinetic","enemy")
 Dual_blasters = AdvancedAbility("Dual blasters","Two medium-range blasters which deliver double the trouble.",25,"ranged",1,"energy","enemy")
 XXI_Sniper = StandardAbility("XXI Sniper","A standard issue sniper rifle used by the VanGard.","ranged",40,0,"kinetic","enemy")
 LRX_Blaster = StandardAbility("LR-X Blaster","Standard issue blaster for officers within the VanGard.","ranged",30,1,"energy","enemy")
+FIIC_TCrossbow = AdvancedAbility("FIIC Tactical Crossbow","A modern and powerful crossbow which pierces through armour.",45,"ranged",1,"kinetic","enemy")
 
 #ability
 Restoration = AdvancedAbility("Restoration","Restore some health.",80,"medicine",2,"","team")
@@ -90,7 +91,7 @@ Energy_shield = AdvancedAbility("ESG","Energy Shield Generator which grants extr
 
 #tactical
 Railgun = StandardAbility("Railgun","A powerful railgun which accelerates a bullet to immense speeds.","ranged",100,0,"kinetic","enemy")
-Powerblade = StandardAbility("Powerblade","A blade of pure power.","melee",180,0,"energy","enemy")
+Powerblade = StandardAbility("Powerblade","A blade of pure power.","melee",120,0,"energy","enemy")
 Stand_off = AdvancedAbility("Stand off","Aim in on your target with high precision and deal extra damage.",1,"tactic",0,"","enemy")
 Earthquake = AdvancedAbility("Earthquake","Shatter the ground damaging enemies",100,"melee",0,"kinetic","enemy")
 Command = AdvancedAbility("Command","An encouraging command to fight better. Doubles all melee damage for 1 round.",1,"tactic",0,"","team")
@@ -102,7 +103,7 @@ Rangewave.ability = [Combat_knife,XXI_Sniper,LROne_Blaster,Railgun]
 General_Borg = Character("General Borg","General Attus Borg is a general within the VanGard.",1,2,1,2,900,0,0,Command)
 General_Borg.ability = [Combat_knife,Restoration,LRX_Blaster,Command]
 
-Firefly = Character("Firefly","Fiery warrior and mechanic of the VanGard. From the planet Laito.",1,2,1,2,900,10,0,Powerblade)
+Firefly = Character("Firefly","Fiery warrior and mechanical officer of the VanGard. From the planet Laito.",1,2,1,2,900,10,0,Powerblade)
 Firefly.ability = [Flame_blast,Restoration,Energy_blade,Powerblade]
 
 Caveman = Character("Caveman","Strengthy brute who can take a hit.",1,1,1,1,1020,0,20,Earthquake)
@@ -110,6 +111,7 @@ Caveman.ability = [Punch,Swift_strike,LROne_Blaster,Earthquake]
 
 Target_practice = Character("Target Practice","Never misses. Does not wear a blindfold.",1,1,1,1,970,0,20,Stand_off)
 Target_practice.ability = [Dual_blasters,Energy_blade,LROne_Blaster,Stand_off]
+Target_practice.lvl = 2
 
 #enemy abilities
 Pounce = StandardEnemyAbility("Pounce","A quick and easy pounce","kinetic",20,"team")
@@ -118,6 +120,8 @@ FC_DBlasters = StandardEnemyAbility("FC Dual blasters","Two blasters used by fam
 Charge = StandardEnemyAbility("Charge","Rush towards the enemy.","kinetic",70,"team")
 C58_Grenade = AdvancedEnemyAbility("C58 Grenade","A grenade.","energy",30,"team")
 TTI_Blaster = StandardEnemyAbility("TTI Blaster","Standard issue Exi blaster.","energy",50,"team")
+TTX_Blaster = StandardEnemyAbility("TTX Blaster","Standard issue Exi officer blaster.","energy",60,"team")
+ShieldEn = AdvancedEnemyAbility("Shield generator","Apply a temporary shield.","",10,"enemy")
 
 #enemies
 Critter = Enemy("Critter","Small but oversized desert dwelling insect.",180,0,0)
@@ -145,8 +149,19 @@ Exi_Canoneer.ability = [copy(TTI_Blaster),copy(C58_Grenade)]
 Exi_Canoneer.ability[0].weight = 4
 Exi_Canoneer.ability[1].weight = 1
 
+Exi_pilot = Enemy("Exi Pilot","Pilot of Exi.",230,5,5)
+Exi_pilot.ability = [copy(TTI_Blaster),copy(ShieldEn)]
+Exi_pilot.ability[0].weight = 5
+Exi_pilot.ability[1].weight = 1
+
+Exi_officer = Enemy("Exi Officer","Officer of Exi.",250,10,5)
+Exi_officer.ability = [copy(TTX_Blaster),copy(ShieldEn)]
+Exi_officer.ability[0].weight = 3
+Exi_officer.ability[1].weight = 1
+
 #levels
-levels = [[Exi_trooper,Exi_trooper],[Critter,Critter,Critter],[Exi_trooper,Exi_Canoneer,Exi_trooper],[Exi_trooper,Bullseye,Exi_trooper]]
+levels = [[Exi_trooper,Exi_trooper],[Critter,Critter,Critter],[Exi_trooper,Exi_Canoneer,Exi_trooper],[Exi_trooper,Bullseye,Exi_trooper],[Exi_trooper,Exi_pilot],[Exi_trooper,Exi_pilot,Exi_pilot],[Exi_Canoneer,Exi_officer]]
+difficulty = [1,1,1,1,2,2,2]
 
 #functions
 def listText(list,prepend,append):
@@ -226,11 +241,11 @@ def combat(team,enemies):
     activeTeam = copy(team)
     livingTeam = team
     turnCounter = 0
-    counter = ["x","x","x"]
-    for i in range(len(team)):
-        team[i].hp = team[i].hp * team[i].lvl
+    counter = ["x","x","x","x"]
+    # for i in range(len(team)):
+    #     team[i].hp = team[i].hp * team[i].lvl
     for i in range(len(enemies)):
-        enemies[i].hp = enemies[i].hp * enemies[i].lvl
+        enemies[i].hp = enemies[i].maxhp
     character = ""
     while len(livingTeam) > 0 and len(enemies) > 0:
         turnCounter += 1
@@ -248,6 +263,9 @@ def combat(team,enemies):
                     elif i == 2:
                         counter[2][1].shield -= Energy_shield.value
                         counter[2] = "x"
+                    elif i == 3:
+                        counter[3][1].shield -= ShieldEn.value * counter[3][1].lvl
+                        counter[3] = "x"
         energy += 1
         activeTeam = copy(team)
         while len(livingTeam) > 0:
@@ -331,7 +349,7 @@ def combat(team,enemies):
                         cancel = True
                         break
                     enemies,damage = dealDamage(character,ability,enemies,targetID)
-                    tactical += tacticalCalc(damage,tactical)
+                    tactical += tacticalCalc(damage/character.lvl,tactical)
                     if ability == 3:
                         tactical = 0
                     print(f"Tactical: {tactical}%\n")
@@ -348,10 +366,10 @@ def combat(team,enemies):
                             cancel = True
                             break
                         enemies,damage = dealDamage(character,ability,enemies,targetID)
-                        tactical += tacticalCalc(damage,tactical)
+                        tactical += tacticalCalc(damage/character.lvl,tactical)
                         print(f"Tactical: {tactical}%\n")
                         enemies,damage = dealDamage(character,ability,enemies,targetID)
-                        tactical += tacticalCalc(damage,tactical)
+                        tactical += tacticalCalc(damage/character.lvl,tactical)
                         print(f"Tactical: {tactical}%\n")
                     if abilityValue == Restoration:
                         targetID = findTarget(livingTeam)
@@ -373,7 +391,7 @@ def combat(team,enemies):
                             if enemies[i].hp < 1:
                                 enemies[i].hp = 0
                             print(f"The enemy's health is now {enemies[i].hp}")
-                            tactical += tacticalCalc(damage,tactical)
+                            tactical += tacticalCalc(damage/character.lvl,tactical)
                             print(f"Tactical: {tactical}%\n")
                     if abilityValue == Stand_off:
                         character.range += 2
@@ -385,10 +403,10 @@ def combat(team,enemies):
                             cancel = True
                             break
                         enemies,damage = dealDamage(character,ability,enemies,targetID)
-                        tactical += tacticalCalc(damage,tactical)
+                        tactical += tacticalCalc(damage/character.lvl,tactical)
                         print(f"Tactical: {tactical}%\n")
                         enemies,damage = dealDamage(character,ability,enemies,targetID)
-                        tactical += tacticalCalc(damage,tactical)
+                        tactical += tacticalCalc(damage/character.lvl,tactical)
                         print(f"Tactical: {tactical}%\n")
                     if abilityValue == Earthquake:
                         for i in range(len(enemies)):
@@ -414,6 +432,22 @@ def combat(team,enemies):
                             break
                         livingTeam[targetID].shield += abilityValue.value
                         counter[2] = [2,livingTeam[targetID]]
+                    if abilityValue == FIIC_TCrossbow:
+                        targetID = findTarget(enemies)
+                        if targetID == "c":
+                            cancel = True
+                            break
+                        proficiency = character.range
+                        damage = character.ability[ability].value * proficiency
+                        if damage < 0:
+                            damage = 0
+                        print(f"\nThe enemy's health was {enemies[targetID].hp}")
+                        enemies[targetID].hp -= damage
+                        if enemies[targetID].hp < 1:
+                            enemies[targetID].hp = 0
+                        print(f"The enemy's health is now {enemies[targetID].hp}")
+                        tactical += tacticalCalc(damage/character.lvl,tactical)
+                        print(f"Tactical: {tactical}%\n")
                     energy -= activeTeam[characterID].ability[ability].cost
                     break
             if cancel == True:
@@ -461,14 +495,14 @@ def combat(team,enemies):
                     if livingTeam[targetID].hp < 1:
                         livingTeam[targetID].hp = 0
                     print(f"{livingTeam[targetID].name}'s health is now {livingTeam[targetID].hp}")
-                    tactical += tacticalCalc(damage,tactical)
+                    tactical += tacticalCalc(damage/enemies[i].lvl,tactical)
                     input(f"Tactical: {tactical}%")
                 if type(enemies[i].ability[ability]) == AdvancedEnemyAbility:
                     abilityValue = enemies[i].ability[ability]
                     if abilityValue.name == "C58 Grenade":
                         print(f"\n{enemies[i].name} uses {enemies[i].ability[ability].name}.")
                         for x in range(len(livingTeam)):
-                            damage = enemies[i].ability[ability].value - livingTeam[x].armour
+                            damage = enemies[i].ability[ability].value * enemies[i].lvl - livingTeam[x].armour
                             if damage < 0:
                                 damage = 0
                             print(f"\n{livingTeam[x].name}'s health was {livingTeam[x].hp}")
@@ -476,8 +510,12 @@ def combat(team,enemies):
                             if livingTeam[x].hp < 1:
                                 livingTeam[x].hp = 0
                             print(f"{livingTeam[x].name}'s health is now {livingTeam[x].hp}")
-                            tactical += tacticalCalc(damage,tactical)
+                            tactical += tacticalCalc(damage/enemies[i].lvl,tactical)
                             input(f"Tactical: {tactical}%")
+                    if abilityValue.name == "Shield generator":
+                        print(f"\n{enemies[i].name} uses {enemies[i].ability[ability].name} and increases their shield by {abilityValue.value * enemies[i].lvl}.")
+                        counter[3] = [2,enemies[i]]
+                        enemies[i].shield += abilityValue.value * enemies[i].lvl
                 i = 0
                 while True:
                     if livingTeam[i].hp <= 0:
@@ -499,29 +537,29 @@ def combat(team,enemies):
     if exitType != "x":
         for i in range(len(team)):
             team[i].xp += xp
-            if team[i].xp > team[i].lvl*500:
-                while team[i].xp > team[i].lvl*500:
-                    team[i].xp -= team[i].lvl*500
+            if team[i].xp > team[i].lvl*300:
+                while team[i].xp > team[i].lvl*300:
+                    team[i].xp -= team[i].lvl*300
                     team[i].lvl += 1
                 team[i].melee = team[i].defaultValues[0] * team[i].lvl
                 team[i].range = team[i].defaultValues[1] * team[i].lvl
                 team[i].med = team[i].defaultValues[2] * team[i].lvl
                 team[i].tactic = team[i].defaultValues[3] * team[i].lvl
-                team[i].hp = team[i].defaultValues[4] + 100 * (team[i].lvl - 1)
-                team[i].maxhp = team[i].defaultValues[4] + 100 * (team[i].lvl - 1)
+                team[i].hp = team[i].defaultValues[4] + 200 * (team[i].lvl - 1)
+                team[i].maxhp = team[i].defaultValues[4] + 200 * (team[i].lvl - 1)
                 team[i].armour = team[i].defaultValues[5]
                 team[i].shield = team[i].defaultValues[6]
         return team,exitType
 
 def edit(team,all,abilities):
     while True:
-        answer = input("Would you like to edit your characters or change your team? [exit, e(dit), c(hange)]")
+        answer = input("\nWould you like to edit your characters or change your team? [exit, e(dit), c(hange)]")
         if answer == "exit":
             return team,all
         elif answer == "e": 
             while True:
                 q = listText(all,"c(ancel)","")
-                answer = (input(f"Choose a team member: {q}"))
+                answer = (input(f"\nChoose a character: {q}"))
                 if answer == "c":
                     break
                 try:
@@ -536,7 +574,7 @@ def edit(team,all,abilities):
                     continue
                 while True:
                     q = listText(all[characterID].ability,"c(ancel)","")
-                    answer = input(f"Choose an ability to edit or inspect: {q}")
+                    answer = input(f"\nChoose an ability to edit or inspect: {q}")
                     if answer == "c":
                         break
                     try:
@@ -553,11 +591,11 @@ def edit(team,all,abilities):
                         input(f"{all[characterID].ability[abilityID].name}: {all[characterID].ability[abilityID].desc} (This ability can not be replaced)")
                     else:
                         while True:
-                            answer = input(f"Inspect or replace {all[characterID].ability[abilityID].name}? [c(ancel), i(nspect), r(eplace)]")
+                            answer = input(f"\nInspect or replace {all[characterID].ability[abilityID].name}? [c(ancel), i(nspect), r(eplace)]")
                             if answer == "c":
                                 break
                             elif answer == "i":
-                                input(f"{all[characterID].ability[abilityID].name}: {all[characterID].ability[abilityID].desc} This ability costs {all[characterID].ability[abilityID].cost} energy to use.")
+                                input(f"\n{all[characterID].ability[abilityID].name}: {all[characterID].ability[abilityID].desc} This ability costs {all[characterID].ability[abilityID].cost} energy to use.")
                             elif answer == "r":
                                 availableAbilities = filterList(abilities,all[characterID].ability)
                                 if availableAbilities != []:
@@ -584,16 +622,21 @@ def edit(team,all,abilities):
                                 input("You must write a valid input.")
                                 continue
         elif answer == "c":
+            add_character = Character("Add character","There is currently no character in this slot.",0,0,0,0,0,0,0,"n/a")
             while True:
                 while True:
                     if len(team) != 3:
-                        add_character = Character("Add character","There is currently no character in this slot.",0,0,0,0,0,0,0,"n/a")
-                        team.append(add_character)
+                        for i in range(3-len(team)):
+                            team.append(add_character)
                     else:
                         break
                 q = listText(team,"c(ancel)","")
-                answer = input(f"Choose a team member to replace: {q}")
+                answer = input(f"\nChoose a team member to replace: {q}")
                 if answer == "c":
+                    for i in range(len(team)):
+                        if team[i] == add_character:
+                            team.remove(add_character)
+                            i -= 1
                     break
                 try:
                     answer = int(answer)
@@ -620,7 +663,7 @@ def edit(team,all,abilities):
                         break
                 else:
                     while True:
-                        answer = input(f"Inspect or replace? [c(ancel), i(nspect), r(eplace)]")
+                        answer = input(f"\nInspect or replace? [c(ancel), i(nspect), r(eplace)]")
                         if answer == "c":
                             break
                         elif answer == "i":
@@ -713,6 +756,48 @@ def playDialogue(level,dialogue):
             input("Suddenly, a blast flies past them.")
             input('Bullseye: "Well then, look what we got here!"')
             input('''Bullseye: "Name's Bullseye, famed bounty hunter, and wherever you're going you're not going any further."''')
+        if level == 4:
+            input('Rangewave: "Surrender!"')
+            input('Bullseye: "..."')
+            input('Bullseye: "No!"')
+            input("Bullseye leaps and runs away. Rangewave decides to follow but is stopped by Firefly.")
+            input('''Firefly: "He's not important. Let's rescue the scout."''')
+            input("They enter the chamber where the scout is being held and release them.")
+            input('Scout: "Thank you!"')
+            input('General Borg: "Good job! We have secured the base."')
+            input("Firefly and Rangewave leave the base and jump aboard a ship.")
+            input('General Borg: "Well done, you two!"')
+            input('General Borg: "However, we have news of the Exi terrorizing the Itmar system."')
+            input('General Borg: "We will need you both there as soon as possible."')
+            input('General Borg: "Before you go we do however have some upgrades."')
+            input('General Borg: "Here!"')
+            input('Your characters have gained access to the ability: "FIIC Tactical Crossbow"')
+            input("To equip it on a character enter the edit menu.")
+        if level == 6:
+            input('As the team goes through the ship they meet one of the members, Target Practice, of Team Charge.')
+            input('Rangewave: "What are you doing here?"')
+            input('Target Practice: "Caveman and I were going through the reactor shaft when he fell."')
+            input('''Target Practice: "He is alright, he's just alone."''')
+            input('''Firefly: "Then we need to find him!"''')
+            input("Target Practice has been added to the available characters. Enter the customazation menu to put them on the team.")
+
+def playPreDialogue(level,play):
+    if not play:
+        return
+    else:
+        if level == 4:
+            input('The team approaches the Itmar system in a battle cruiser.')
+            input('Captain Phfion: "When we enter the system we will immidietly be under fire from this Exi cruiser."')
+            input("A map is shown with an image of an Exi cruiser.")
+            input('Captain Phfion: "Two teams will board the cruiser: Team Ion and Team Charge."')
+            input('Captain Phfion: "Team Ion will consist of Officer Firefly and Rangewave."')
+            input('Captain Phfion: "Team Charge will consist of Target Practice and Caveman."')
+            input("Two people standing beside Firefly and Rangewave nod.")
+            input("After some more briefing of the plan the two teams are loaded aboard separate ships.")
+            input("As the cruiser approaches the system the ships leave it and approach the Exi cruiser under heavy fire.")
+            input("Luckily, both make it aboard.")
+            input("Team Ion lands in a hangar and are immidietly approached by Exi troopers.")
+            input('Firefly: "Incoming!"')
 
 def saveGame(team,characters,abilities,level):
     q = "Characters:\n"
@@ -782,6 +867,13 @@ def loadGame(allCharacters,allAbilities):
                 break
         line = f.readline()
     level = int(f.readline())
+    for i in range(len(returnCharacters)):
+        returnCharacters[i].melee = returnCharacters[i].defaultValues[0] * returnCharacters[i].lvl
+        returnCharacters[i].range = returnCharacters[i].defaultValues[1] * returnCharacters[i].lvl
+        returnCharacters[i].med = returnCharacters[i].defaultValues[2] * returnCharacters[i].lvl
+        returnCharacters[i].tactic = returnCharacters[i].defaultValues[3] * returnCharacters[i].lvl
+        returnCharacters[i].hp = returnCharacters[i].defaultValues[4] + 200 * (returnCharacters[i].lvl - 1)
+        returnCharacters[i].maxhp = returnCharacters[i].defaultValues[4] + 200 * (returnCharacters[i].lvl - 1)
     return returnTeam,returnCharacters,returnAbilities,level
 
 def main():
@@ -796,7 +888,7 @@ def main():
                 print("There seems to be a problem with the file.\nFix it and try to load it again.")
                 quit()
             allCharacters = [Rangewave,General_Borg,Firefly,Caveman,Target_practice]
-            allAbilities = [Punch,Swift_strike,LROne_Blaster,Flame_blast,Restoration,Energy_blade,Railgun,Powerblade,Energy_shield]
+            allAbilities = [Punch,Swift_strike,LROne_Blaster,Flame_blast,Restoration,Energy_blade,Railgun,Powerblade,Energy_shield,FIIC_TCrossbow]
             fullTeam,unlockedCharacters,unlockedAbilities,level = loadGame(allCharacters,allAbilities)
             input("Loaded save [Enter]")
             break
@@ -818,6 +910,8 @@ def main():
             enemies = []
             for i in range(len(levels[level])):
                 enemies.append(copy(levels[level][i]))
+                enemies[i].lvl = difficulty[level]
+                enemies[i].maxhp *= enemies[i].lvl
             fullTeam,exitType = combat(fullTeam,enemies)
             if exitType == "victory":
                 if level == 0:
@@ -828,18 +922,24 @@ def main():
                     unlockedAbilities.append(Flame_blast)
                     unlockedAbilities.append(Restoration)
                     unlockedAbilities.append(Energy_blade)
+                if level == 3:
+                    unlockedAbilities.append(FIIC_TCrossbow)
                 level += 1
                 dialogue = 0
             for i in range(len(fullTeam)):
                 fullTeam[i].hp = fullTeam[i].maxhp
         else:
-            answer = input("What would you like to do? [c(ombat), e(dit team)], [s(ave game])]")
+            answer = input("\nWhat would you like to do? [c(ombat), e(dit team)], [s(ave game])]")
             if answer == "c":
                 while True:
                     levelsNum = []
                     levelsNum.append("c(ancel)")
-                    for i in range(level+1):
-                        levelsNum.append(i+1)
+                    if level >= len(levels):
+                        for i in range(len(levels)):
+                            levelsNum.append(i+1)
+                    else:
+                        for i in range(level+1):
+                            levelsNum.append(i+1)
                     answer = input(f"Select level: {levelsNum}")
                     if answer == "c":
                         break
@@ -855,8 +955,14 @@ def main():
                 enemies = []
                 for i in range(len(levels[answer])):
                     enemies.append(copy(levels[answer][i]))
+                    enemies[i].lvl = difficulty[answer]
+                    enemies[i].maxhp = enemies[i].hp + 200 * (enemies[i].lvl - 1)
+                playPreDialogue(level,answer==level)
                 fullTeam,exitType = combat(fullTeam,enemies)
                 if exitType == "victory":
+                    if level == 5:
+                        unlockedCharacters.append(Target_practice)
+                        unlockedAbilities.append(Dual_blasters)
                     level += 1
                     dialogue = 0
                 for i in range(len(fullTeam)):
