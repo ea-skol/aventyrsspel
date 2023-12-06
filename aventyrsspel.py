@@ -138,8 +138,6 @@ Bullseye.ability = [copy(FC_DBlasters),copy(Charge)]
 Bullseye.ability[0].weight = 3
 Bullseye.ability[1].weight = 1
 
-# Scope = 
-
 Exi_trooper = Enemy("Exi Trooper","Standard trooper of Exi.",280,5,0)
 Exi_trooper.ability = [copy(TTI_Blaster)]
 Exi_trooper.ability[0].weight = 1
@@ -159,9 +157,17 @@ Exi_officer.ability = [copy(TTX_Blaster),copy(ShieldEn)]
 Exi_officer.ability[0].weight = 3
 Exi_officer.ability[1].weight = 1
 
+Exi_guard = Enemy("Exi Sovereign Guard","",400,10,10)
+Exi_guard.ability = [copy(Pounce)]
+
+Exi_SuperiorGaurd = Enemy("Exi Superior Guard","Coming soon",0,0,0)
+
+Scope = Enemy("Scope","Coming soon",0,0,0)
+Scope.ability = [copy(Pounce)]
+
 #levels
-levels = [[Exi_trooper,Exi_trooper],[Critter,Critter,Critter],[Exi_trooper,Exi_Canoneer,Exi_trooper],[Exi_trooper,Bullseye,Exi_trooper],[Exi_trooper,Exi_pilot],[Exi_trooper,Exi_pilot,Exi_pilot],[Exi_Canoneer,Exi_officer],[Exi_officer,Exi_trooper,Exi_trooper],[Exi_trooper,Exi_trooper],[Exi_officer,Exi_Canoneer,Exi_officer]]
-difficulty = [1,1,1,1,2,2,2,2,3,3]
+levels = [[Exi_trooper,Exi_trooper],[Critter,Critter,Critter],[Exi_trooper,Exi_Canoneer,Exi_trooper],[Exi_trooper,Bullseye,Exi_trooper],[Exi_trooper,Exi_pilot],[Exi_trooper,Exi_pilot,Exi_pilot],[Exi_Canoneer,Exi_officer],[Exi_officer,Exi_trooper,Exi_trooper],[Exi_trooper,Exi_trooper],[Exi_officer,Exi_Canoneer,Exi_officer],[Exi_guard,Exi_guard]]
+difficulty = [1,1,1,1,2,2,2,2,3,3,3]
 
 #functions
 def listText(list,prepend,append):
@@ -821,7 +827,7 @@ def playDialogue(level,dialogue):
             input('Firefly: "Did they flee too?"')
             input('Caveman: "Not yet, and that is why we hurry!"')
             input("Firefly actives the comms.")
-            input('Firefly: "Everyone! The High Chancellor is on this cruiser. I repeat: High Chancellor Sailos of the Exi is on this cruiser."')
+            input('Firefly: "Everyone! The High Chancellor is on this cruiser. I repeat: High Chancellor Sailos is on this cruiser."')
             input('Comms: "Captain Phfion here, are you sure?"')
             input('Caveman: "Yes!"')
             input('Comms: "We will have the cruiser surrounded then!"')

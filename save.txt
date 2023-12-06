@@ -1,36 +1,30 @@
 Characters:
 Rangewave
-433
-3
-FIIC Tactical Crossbow
+127
+2
 XXI Sniper
+FIIC Tactical Crossbow
 LR-1 Blaster
 Railgun
 Firefly
-323
-3
+17
+2
 Flame blast
 Restoration
 Energy blade
 Powerblade
-Target Practice
-176
-3
-Dual blasters
-Energy blade
-LR-1 Blaster
-Stand off
 end
 Team:
 Rangewave
 Firefly
-Target Practice
 end
 Abilities:
+Combat knife
+XXI Sniper
 LR-1 Blaster
 Flame blast
 Restoration
 Energy blade
 FIIC Tactical Crossbow
 end
-8
+4
