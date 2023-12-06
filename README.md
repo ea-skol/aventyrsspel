@@ -1,7 +1,7 @@
 # aventyrsspel
 
 Äventyrsspel:
-X is a Sci-Fi RPG where a group of heroes fight for something or something.
+"Heroes of the VanGard" is a Sci-Fi RPG where a group of heroes fight for the VanGard against the Exi.
 
 How to play:
 Whenever you play you will be presented with choices on what to do. These choices can either be executed by typing a number (which will be next to the choice) or a letter (it will usually look like this: i(nspect)). Figuring out what tactics work and how to play in the best way will however be up to you.

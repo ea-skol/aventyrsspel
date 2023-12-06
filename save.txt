@@ -1,21 +1,21 @@
 Characters:
 Rangewave
-398
-2
+433
+3
 FIIC Tactical Crossbow
 XXI Sniper
 LR-1 Blaster
 Railgun
 Firefly
-275
+323
 3
 Flame blast
 Restoration
 Energy blade
 Powerblade
 Target Practice
-90
-2
+176
+3
 Dual blasters
 Energy blade
 LR-1 Blaster
@@ -33,4 +33,4 @@ Restoration
 Energy blade
 FIIC Tactical Crossbow
 end
-7
+8

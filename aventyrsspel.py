@@ -109,7 +109,7 @@ Firefly.ability = [Flame_blast,Restoration,Energy_blade,Powerblade]
 Caveman = Character("Caveman","Strengthy brute who can take a hit.",1,1,1,1,1020,0,20,Earthquake)
 Caveman.ability = [Punch,Swift_strike,LROne_Blaster,Earthquake]
 
-Target_practice = Character("Target Practice","Never misses. Does not wear a blindfold.",1,1,1,1,970,0,20,Stand_off)
+Target_practice = Character("Target Practice","Marksman of the VanGard.",1,2,1,1,970,0,20,Stand_off)
 Target_practice.ability = [Dual_blasters,Energy_blade,LROne_Blaster,Stand_off]
 Target_practice.lvl = 2
 
@@ -160,8 +160,8 @@ Exi_officer.ability[0].weight = 3
 Exi_officer.ability[1].weight = 1
 
 #levels
-levels = [[Exi_trooper,Exi_trooper],[Critter,Critter,Critter],[Exi_trooper,Exi_Canoneer,Exi_trooper],[Exi_trooper,Bullseye,Exi_trooper],[Exi_trooper,Exi_pilot],[Exi_trooper,Exi_pilot,Exi_pilot],[Exi_Canoneer,Exi_officer]]
-difficulty = [1,1,1,1,2,2,2]
+levels = [[Exi_trooper,Exi_trooper],[Critter,Critter,Critter],[Exi_trooper,Exi_Canoneer,Exi_trooper],[Exi_trooper,Bullseye,Exi_trooper],[Exi_trooper,Exi_pilot],[Exi_trooper,Exi_pilot,Exi_pilot],[Exi_Canoneer,Exi_officer],[Exi_officer,Exi_trooper,Exi_trooper],[Exi_trooper,Exi_trooper],[Exi_officer,Exi_Canoneer,Exi_officer]]
+difficulty = [1,1,1,1,2,2,2,2,3,3]
 
 #functions
 def listText(list,prepend,append):
@@ -376,7 +376,7 @@ def combat(team,enemies):
                         if targetID == "c":
                             cancel = True
                             break
-                        livingTeam[targetID].hp += abilityValue.value
+                        livingTeam[targetID].hp += abilityValue.value * character.med
                         if livingTeam[targetID].hp > livingTeam[targetID].maxhp:
                             livingTeam[targetID].hp = livingTeam[targetID].maxhp
                         input(f"{livingTeam[targetID].name} was healed to {livingTeam[targetID].hp} health.")
@@ -534,12 +534,12 @@ def combat(team,enemies):
     elif enemies == []:
         input(f"Your characters gained {xp}xp!")
         exitType = "victory"
-    if exitType != "x":
+    if exitType == "victory":
         for i in range(len(team)):
             team[i].xp += xp
-            if team[i].xp > team[i].lvl*300:
-                while team[i].xp > team[i].lvl*300:
-                    team[i].xp -= team[i].lvl*300
+            if team[i].xp > team[i].lvl*250:
+                while team[i].xp > team[i].lvl*250:
+                    team[i].xp -= team[i].lvl*250
                     team[i].lvl += 1
                 team[i].melee = team[i].defaultValues[0] * team[i].lvl
                 team[i].range = team[i].defaultValues[1] * team[i].lvl
@@ -746,7 +746,7 @@ def playDialogue(level,dialogue):
             input("The ship approaches the Exi base and as it does oncoming fire forces them to fly low.")
             input('''Firefly: "We're going to have to settle down here! Get ready to jump!"''')
             input("Firefly and Rangewave jump out of the ship and approach the base.")
-            input("A group of Exi soliders approaches them from the gates of the base.")
+            input("A group of Exi soldiers approaches them from the gates of the base.")
         if level == 3:
             input('Comms: "This is General Borg! We have located where in the base the scout is held."')
             input('''Firefly: "Send us the position and we'll get on it!"''')
@@ -780,6 +780,52 @@ def playDialogue(level,dialogue):
             input('''Target Practice: "He is alright, he's just alone."''')
             input('''Firefly: "Then we need to find him!"''')
             input("Target Practice has been added to the available characters. Enter the customazation menu to put them on the team.")
+        if level == 7:
+            input('Comms: "This is captain Phfion, I have good news!"')
+            input('Comms: "We are recieving support from the Caion Federation."')
+            input('Into the hangar of the Exi cruiser ships fly in which start shooting at the Exi soldiers.')
+            input("Troops exit the ships and approach the team.")
+            input('''Captain Hyjio: "Your job here is done, we're taking over."''')
+            input('Firefly: "We have a trooper within this ship that we have to recieve."')
+            input('''Captain Hyjio: "If they're alone, then they're dead."''')
+            input('Target Practice: "Caveman is strong. I doubt he will go down easily!"')
+            input('''Captain Hyjio: "Caveman! What a stupid name. Either way you're out."''')
+            input('Firefly: "What jurisdiction do you have to tell us that?"')
+            input('Captain Hyjio: "This system is part of the Caion Federation, get out!"')
+            input('Firefly: "The VanGard is part of the Caion Federation."')
+            input('Captain Hyjio: "I can demote you."')
+            input('Rangewave: "Contact Phfion."')
+            input('Captain Hyjio: "No need."')
+            input("Firefly stares at Hyjio and turns on the comms.")
+            input('Comms: "Captain Phfion here, over."')
+            input('Firefly: "Permission to ignore Caion commands and go save Caveman?"')
+            input('Comms: "What?"')
+            input('Firefly: "We have been ordered to leave but Caveman is in trouble."')
+            input('''Comms: "Why wouldn't you be able to rescue him?"''')
+            input('''Firefly: "Because we've been ordered to leave by some Hyjio."''')
+            input('Comms: "Permission to rescue Caveman granted."')
+            input('Firefly: "Thank you, captain."')
+            input("Firefly glares at Hyjio before they leave to go after Caveman.")
+        if level == 10:
+            input("As the team runs through the ship they manage to walk into a familiar face.")
+            input('Target Practice: "Caveman!"')
+            input('Caveman: "Target Practice! You have to hurry!"')
+            input("Caveman starts running and the others follow.")
+            input('Caveman: "I managed to run into some important Exi figures."')
+            input('Caveman: "First off: Grand General Kaiylof of the Exi."')
+            input('Firefly: "And what happened?"')
+            input('Caveman: "Took them by surprise: The Grand General is dead."')
+            input('Caveman: "With the Grand General was also Exi Governer Ridley. They managed to flee."')
+            input('Firefly: "Dammit!"')
+            input('Caveman: "Lastly: High Chancellor Sailos, the leader of the Exi."')
+            input('Firefly: "Did they flee too?"')
+            input('Caveman: "Not yet, and that is why we hurry!"')
+            input("Firefly actives the comms.")
+            input('Firefly: "Everyone! The High Chancellor is on this cruiser. I repeat: High Chancellor Sailos of the Exi is on this cruiser."')
+            input('Comms: "Captain Phfion here, are you sure?"')
+            input('Caveman: "Yes!"')
+            input('Comms: "We will have the cruiser surrounded then!"')
+            input("Caveman has been added to the available characters.")
 
 def playPreDialogue(level,play):
     if not play:
@@ -798,6 +844,8 @@ def playPreDialogue(level,play):
             input("Luckily, both make it aboard.")
             input("Team Ion lands in a hangar and are immidietly approached by Exi troopers.")
             input('Firefly: "Incoming!"')
+        if level == 8:
+            pass
 
 def saveGame(team,characters,abilities,level):
     q = "Characters:\n"
@@ -929,7 +977,7 @@ def main():
             for i in range(len(fullTeam)):
                 fullTeam[i].hp = fullTeam[i].maxhp
         else:
-            answer = input("\nWhat would you like to do? [c(ombat), e(dit team)], [s(ave game])]")
+            answer = input("\nWhat would you like to do? [c(ombat), e(dit team), [s(ave game])]")
             if answer == "c":
                 while True:
                     levelsNum = []
@@ -959,7 +1007,7 @@ def main():
                     enemies[i].maxhp = enemies[i].hp + 200 * (enemies[i].lvl - 1)
                 playPreDialogue(level,answer==level)
                 fullTeam,exitType = combat(fullTeam,enemies)
-                if exitType == "victory":
+                if exitType == "victory" and answer == level:
                     if level == 5:
                         unlockedCharacters.append(Target_practice)
                         unlockedAbilities.append(Dual_blasters)
