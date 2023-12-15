@@ -1,5 +1,7 @@
 # aventyrsspel
 
+Heroes of the VanGard; version: 1.14as
+
 Äventyrsspel:
 "Heroes of the VanGard" is a Sci-Fi RPG where a group of heroes fight for the VanGard against the Exi.
 
