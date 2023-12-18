@@ -1,37 +1,37 @@
 Characters:
 Rangewave
-638
-3
+48
+5
 FIIC Tactical Crossbow
-Power Punch
+XXI Sniper
 LR-1 Blaster
 Railgun
 Firefly
-528
-3
+218
+5
 Flame blast
 Restoration
 Energy blade
 Powerblade
 Target Practice
-475
-2
+402
+3
 Dual blasters
 Energy blade
 LR-1 Blaster
 Stand off
 Caveman
-0
-2
+410
+4
 Power Punch
 Swift strike
 LR-X Blaster
 Earthquake
 end
 Team:
-Rangewave
+Caveman
 Firefly
-Target Practice
+Rangewave
 end
 Abilities:
 LR-1 Blaster
@@ -42,4 +42,4 @@ FIIC Tactical Crossbow
 Power Punch
 Swift strike
 end
-11
+12

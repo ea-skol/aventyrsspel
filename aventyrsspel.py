@@ -118,7 +118,6 @@ Target_practice.maxhp = Target_practice.defaultValues[4] + 200 * (Target_practic
 Target_practice.armour = Target_practice.defaultValues[5]
 Target_practice.shield = Target_practice.defaultValues[6]
 
-
 Caveman = Character("Caveman","Strengthy brute who can take a hit.",2,1,1,1,1020,0,20,Earthquake)
 Caveman.ability = [Punch,Swift_strike,LRX_Blaster,Earthquake]
 Caveman.lvl = 2
@@ -141,6 +140,7 @@ TTI_Blaster = StandardEnemyAbility("TTI Blaster","Standard issue Exi blaster.","
 TTX_Blaster = StandardEnemyAbility("TTX Blaster","Standard issue Exi officer blaster.","energy",60,"team")
 ShieldEn = AdvancedEnemyAbility("Shield generator","Apply a temporary shield.","",10,"enemy")
 Sovereign_Spear = StandardEnemyAbility("Sovereign Spear","A spear used by the Exi Sovereign Guards.","kinetic",80,"team")
+Exi_Blade = StandardEnemyAbility("Grand blade of Exi","The Sovereign and regial blade of Exi.","kinetic",100,"team")
 
 #enemies
 Critter = Enemy("Critter","Small but oversized desert dwelling insect.",180,0,0)
@@ -180,14 +180,21 @@ Exi_guard = Enemy("Exi Sovereign Guard","",1000,20,20)
 Exi_guard.ability = [copy(Sovereign_Spear)]
 Exi_guard.ability[0].weight = 1
 
-Exi_SuperiorGaurd = Enemy("Exi Superior Guard","Coming soon",0,0,0)
+Exi_SuperiorGaurd = Enemy("Exi Superior Guard","A superior guard of the High Chancellor.",1000,20,20)
+Exi_SuperiorGaurd.ability = [copy(Sovereign_Spear),copy(TTI_Blaster)]
+Exi_SuperiorGaurd.ability[0].weight = 3
+Exi_SuperiorGaurd.ability[1].weight = 1
+
+High_Chancellor = Enemy("High Chancellor Sailos","The High Chancellor and grand leader of the Exi.",1400,30,30)
+High_Chancellor.ability = [copy(Exi_Blade),copy(ShieldEn)]
+High_Chancellor.ability[0].weight = 3
+High_Chancellor.ability[1].weight = 1
 
 Scope = Enemy("Scope","Coming soon",0,0,0)
-Scope.ability = [copy(Pounce)]
 
 #levels
-levels = [[Exi_trooper,Exi_trooper],[Critter,Critter,Critter],[Exi_trooper,Exi_Canoneer,Exi_trooper],[Exi_trooper,Bullseye,Exi_trooper],[Exi_trooper,Exi_pilot],[Exi_trooper,Exi_pilot,Exi_pilot],[Exi_Canoneer,Exi_officer],[Exi_officer,Exi_trooper,Exi_trooper],[Exi_trooper,Exi_trooper],[Exi_officer,Exi_Canoneer,Exi_officer],[Exi_guard,Exi_guard]]
-difficulty = [1,1,1,1,2,2,2,2,3,3,3]
+levels = [[Exi_trooper,Exi_trooper],[Critter,Critter,Critter],[Exi_trooper,Exi_Canoneer,Exi_trooper],[Exi_trooper,Bullseye,Exi_trooper],[Exi_trooper,Exi_pilot],[Exi_trooper,Exi_pilot,Exi_pilot],[Exi_Canoneer,Exi_officer],[Exi_officer,Exi_trooper,Exi_trooper],[Exi_trooper,Exi_trooper],[Exi_officer,Exi_Canoneer,Exi_officer],[Exi_guard,Exi_guard],[Exi_SuperiorGaurd,High_Chancellor,Exi_SuperiorGaurd]]
+difficulty = [1,1,1,1,2,2,2,3,3,3,3,3]
 
 #functions
 def listText(list,prepend,append):
@@ -854,6 +861,14 @@ def playDialogue(level,dialogue):
             input('Caveman: "Yes!"')
             input('Comms: "We will have the cruiser surrounded then!"')
             input("Caveman has been added to the available characters.")
+        if level == 12:
+            input("The Chancellor falls to the ground and is approached by Caveman.")
+            input("He grabs the chancellor and puts cuffs on them.")
+            input("In the name of the Caion Federation of Intergalactic Trade you are under arrest and is taken as a prisoner of war.")
+            input("Firefly activates the comms.")
+            input('Firefly: "We have the chancellor."')
+            input("A loud cheering is heard on the other side.")
+            input('''Rangewave: "The war, everything...it's all over."''')
 
 def playPreDialogue(level,play):
     if not play:
@@ -876,6 +891,9 @@ def playPreDialogue(level,play):
             input('Caveman: "There!"')
             input("Caveman's outburst alerts what he was referencing: The High Chancellor as well as four guards.")
             input('High Chancellor Sailos: "Two of you, take care of them. The other two escort me."')
+        if level == 11:
+            input("The team continue to chase the High Chancellor and find them surrounded by guards.")
+            input('Firefly: "This ends here!"')
 
 def saveGame(team,characters,abilities,level):
     q = "Characters:\n"
@@ -979,18 +997,19 @@ def main():
                 unlockedCharacters = [Rangewave]
                 unlockedAbilities = [Combat_knife,XXI_Sniper,LROne_Blaster]
                 level = 0
-                while True:
-                    answer = input("Yould you like to SKIP all cutscenes? y/n")
-                    if answer == "y":
-                        skipCutscene = True
-                        break
-                    elif answer == "n":
-                        skipCutscene = False
-                        break
-                    else:
-                        input("Invalid input")
-                        continue
-                break
+                skipCutscene = False
+                # while True:
+                #     answer = input("Yould you like to SKIP all cutscenes? y/n")
+                #     if answer == "y":
+                #         skipCutscene = True
+                #         break
+                #     elif answer == "n":
+                #         skipCutscene = False
+                #         break
+                #     else:
+                #         input("Invalid input")
+                #         continue
+                # break
         else:
             input("Invalid input")
     while True:
