@@ -916,7 +916,7 @@ def saveGame(team,characters,abilities,level):
     return q
 
 def loadGame(allCharacters,allAbilities):
-    f = open("Prr/aventyrsspel/save.txt")
+    f = open("save.txt")
     q = ""
     returnTeam = []
     returnCharacters = []
@@ -973,13 +973,13 @@ def loadGame(allCharacters,allAbilities):
     return returnTeam,returnCharacters,returnAbilities,level
 
 def main():
-    f = open("Prr/aventyrsspel/save.txt", "a")
+    f = open("save.txt", "a")
     f.close()
     dialogue = 0
     while True:
         answer = input("Load save? y/n:")
         if answer == "y":
-            f = open("Prr/aventyrsspel/save.txt")
+            f = open("save.txt")
             if f.readline() != "Characters:\n":
                 print("There seems to be a problem with the file.\nFix it and try to load it again.")
                 quit()
@@ -998,18 +998,7 @@ def main():
                 unlockedAbilities = [Combat_knife,XXI_Sniper,LROne_Blaster]
                 level = 0
                 skipCutscene = False
-                # while True:
-                #     answer = input("Yould you like to SKIP all cutscenes? y/n")
-                #     if answer == "y":
-                #         skipCutscene = True
-                #         break
-                #     elif answer == "n":
-                #         skipCutscene = False
-                #         break
-                #     else:
-                #         input("Invalid input")
-                #         continue
-                # break
+                break
         else:
             input("Invalid input")
     while True:
@@ -1098,12 +1087,12 @@ def main():
                 break
             elif answer == "s":
                 q = saveGame(fullTeam,unlockedCharacters,unlockedAbilities,level)
-                f = open("Prr/aventyrsspel/save.txt", "w")
+                f = open("save.txt", "w")
                 f.write(q)
                 f.close()
                 input("Saved game")
         q = saveGame(fullTeam,unlockedCharacters,unlockedAbilities,level)
-        f = open("Prr/aventyrsspel/save.txt", "w")
+        f = open("save.txt", "w")
         f.write(q)
         f.close()
 
